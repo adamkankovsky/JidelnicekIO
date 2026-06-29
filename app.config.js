@@ -1,0 +1,44 @@
+const IS_GITHUB_PAGES = process.env.EXPO_PUBLIC_DEPLOY_TARGET === 'github-pages';
+
+/** @type {import('expo/config').ExpoConfig} */
+module.exports = {
+  name: 'Táborový jídelníček',
+  slug: 'JidelnicekIO',
+  version: '1.0.0',
+  orientation: 'portrait',
+  icon: './assets/images/icon.png',
+  scheme: 'jidelnicekio',
+  userInterfaceStyle: 'automatic',
+  ios: {
+    supportsTablet: true,
+  },
+  android: {
+    adaptiveIcon: {
+      backgroundColor: '#E6F4FE',
+      foregroundImage: './assets/images/android-icon-foreground.png',
+      backgroundImage: './assets/images/android-icon-background.png',
+      monochromeImage: './assets/images/android-icon-monochrome.png',
+    },
+    predictiveBackGestureEnabled: false,
+  },
+  web: {
+    bundler: 'metro',
+    output: 'static',
+    favicon: './assets/images/favicon.png',
+  },
+  plugins: [
+    'expo-router',
+    [
+      'expo-splash-screen',
+      {
+        image: './assets/images/splash-icon.png',
+        resizeMode: 'contain',
+        backgroundColor: '#F8FAF9',
+      },
+    ],
+  ],
+  experiments: {
+    typedRoutes: true,
+    ...(IS_GITHUB_PAGES ? { baseUrl: '/JidelnicekIO' } : {}),
+  },
+};
