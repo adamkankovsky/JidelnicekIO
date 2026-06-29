@@ -28,6 +28,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="shopping"
+        options={{
+          title: 'Nákup',
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: 'cart.fill', android: 'shopping_cart', web: 'shopping_cart' }}
+              tintColor={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Nastavení',

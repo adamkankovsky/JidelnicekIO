@@ -7,6 +7,7 @@ import '../global.css';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { DinersProvider } from '@/context/DinersContext';
+import { ShoppingProvider } from '@/context/ShoppingContext';
 
 export {
   ErrorBoundary,
@@ -51,7 +52,9 @@ export default function RootLayout() {
 
   return (
     <DinersProvider>
-      <RootLayoutNav />
+      <ShoppingProvider>
+        <RootLayoutNav />
+      </ShoppingProvider>
     </DinersProvider>
   );
 }
