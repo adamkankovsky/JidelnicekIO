@@ -114,6 +114,7 @@ export function MealSection({ day, meal }: MealSectionProps) {
   const { clearOverridesForMeal } = useDiners();
   const scaledIngredients = useScaledMeal(day, meal);
   const hasOverrides = scaledIngredients.some((i) => i.isOverridden);
+  const [showRecipe, setShowRecipe] = useState(false);
 
   if (!meal.label && scaledIngredients.length === 0) {
     return null;
@@ -156,6 +157,21 @@ export function MealSection({ day, meal }: MealSectionProps) {
           <Text className="py-2 text-sm italic text-camp-muted">Bez ingrediencí</Text>
         )}
       </View>
+      {meal.recipe ? (
+        <View className="border-t border-camp-accent/40">
+          <Pressable
+            onPress={() => setShowRecipe(!showRecipe)}
+            className="flex-row items-center justify-between px-4 py-3 active:bg-camp-accent/20">
+            <Text className="text-sm font-semibold text-camp-primary">Recept</Text>
+            <Text className="text-xs text-camp-muted">{showRecipe ? '▲' : '▼'}</Text>
+          </Pressable>
+          {showRecipe ? (
+            <View className="bg-camp-accent/10 px-4 pb-3">
+              <Text className="text-sm leading-5 text-camp-text">{meal.recipe}</Text>
+            </View>
+          ) : null}
+        </View>
+      ) : null}
     </View>
   );
 }

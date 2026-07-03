@@ -13,6 +13,7 @@ export interface Meal {
   label: string;
   ingredients: Ingredient[];
   ingredientsRaw?: string;
+  recipe?: string;
 }
 
 export interface CampDay {
