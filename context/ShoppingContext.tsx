@@ -5,6 +5,7 @@ import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { getShoppingItemKey } from '@/utils/shopping';
 
 const CHECKED_KEY = '@jidelnicek/shopping-checked';
+const HIDE_PURCHASED_KEY = '@jidelnicek/hide-purchased';
 
 export type CheckedItemsMap = Record<string, boolean>;
 
@@ -13,11 +14,13 @@ interface ShoppingContextValue {
   isLoading: boolean;
   totalCount: number;
   checkedCount: number;
+  hidePurchased: boolean;
   isChecked: (key: string) => boolean;
   toggleItem: (key: string) => void;
   setChecked: (key: string, value: boolean) => void;
   clearAllChecked: () => void;
   checkAll: () => void;
+  setHidePurchased: (value: boolean) => void;
 }
 
 const ShoppingContext = createContext<ShoppingContextValue | null>(null);
@@ -37,14 +40,21 @@ const TOTAL_COUNT = Object.keys(ALL_KEYS).length;
 
 export function ShoppingProvider({ children }: { children: React.ReactNode }) {
   const [checked, setCheckedState] = useState<CheckedItemsMap>({});
+  const [hidePurchased, setHidePurchasedState] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const stored = await AsyncStorage.getItem(CHECKED_KEY);
-        if (stored) {
-          setCheckedState(JSON.parse(stored) as CheckedItemsMap);
+        const [storedChecked, storedHide] = await Promise.all([
+          AsyncStorage.getItem(CHECKED_KEY),
+          AsyncStorage.getItem(HIDE_PURCHASED_KEY),
+        ]);
+        if (storedChecked) {
+          setCheckedState(JSON.parse(storedChecked) as CheckedItemsMap);
+        }
+        if (storedHide) {
+          setHidePurchasedState(JSON.parse(storedHide) as boolean);
         }
       } catch (error) {
         console.warn('Failed to load shopping checklist', error);
@@ -58,7 +68,11 @@ export function ShoppingProvider({ children }: { children: React.ReactNode }) {
 
   const persist = useCallback(async (next: CheckedItemsMap) => {
     setCheckedState(next);
-    await AsyncStorage.setItem(CHECKED_KEY, JSON.stringify(next));
+    try {
+      await AsyncStorage.setItem(CHECKED_KEY, JSON.stringify(next));
+    } catch (error) {
+      console.warn('Failed to persist shopping checklist', error);
+    }
   }, []);
 
   const isChecked = useCallback((key: string) => Boolean(checked[key]), [checked]);
@@ -91,6 +105,15 @@ export function ShoppingProvider({ children }: { children: React.ReactNode }) {
     persist(next);
   }, [persist]);
 
+  const setHidePurchased = useCallback(async (value: boolean) => {
+    setHidePurchasedState(value);
+    try {
+      await AsyncStorage.setItem(HIDE_PURCHASED_KEY, JSON.stringify(value));
+    } catch (error) {
+      console.warn('Failed to persist hide-purchased preference', error);
+    }
+  }, []);
+
   const checkedCount = useMemo(
     () => Object.keys(ALL_KEYS).filter((key) => checked[key]).length,
     [checked],
@@ -102,13 +125,15 @@ export function ShoppingProvider({ children }: { children: React.ReactNode }) {
       isLoading,
       totalCount: TOTAL_COUNT,
       checkedCount,
+      hidePurchased,
       isChecked,
       toggleItem,
       setChecked,
       clearAllChecked,
       checkAll,
+      setHidePurchased,
     }),
-    [checked, isLoading, checkedCount, isChecked, toggleItem, setChecked, clearAllChecked, checkAll],
+    [checked, isLoading, checkedCount, hidePurchased, isChecked, toggleItem, setChecked, clearAllChecked, checkAll, setHidePurchased],
   );
 
   return <ShoppingContext.Provider value={value}>{children}</ShoppingContext.Provider>;

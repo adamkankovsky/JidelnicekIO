@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,8 +6,7 @@ import { useShopping } from '@/context/ShoppingContext';
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 
 export default function ShoppingScreen() {
-  const { isLoading, totalCount, checkedCount, clearAllChecked } = useShopping();
-  const [hidePurchased, setHidePurchased] = useState(false);
+  const { isLoading, totalCount, checkedCount, clearAllChecked, hidePurchased, setHidePurchased } = useShopping();
 
   const progress = totalCount > 0 ? checkedCount / totalCount : 0;
   const remaining = totalCount - checkedCount;
@@ -50,7 +48,7 @@ export default function ShoppingScreen() {
 
           <View className="mt-4 flex-row gap-2">
             <Pressable
-              onPress={() => setHidePurchased((v) => !v)}
+              onPress={() => setHidePurchased(!hidePurchased)}
               className={`flex-1 rounded-xl py-2.5 ${hidePurchased ? 'bg-camp-primary' : 'bg-camp-accent'}`}>
               <Text
                 className={`text-center text-sm font-semibold ${

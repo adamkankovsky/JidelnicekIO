@@ -54,12 +54,20 @@ export function DinersProvider({ children }: { children: React.ReactNode }) {
 
   const persistDiners = useCallback(async (config: DinersConfig) => {
     setDinersState(config);
-    await AsyncStorage.setItem(DINERS_KEY, JSON.stringify(config));
+    try {
+      await AsyncStorage.setItem(DINERS_KEY, JSON.stringify(config));
+    } catch (error) {
+      console.warn('Failed to persist diners', error);
+    }
   }, []);
 
   const persistOverrides = useCallback(async (next: OverridesMap) => {
     setOverridesState(next);
-    await AsyncStorage.setItem(OVERRIDES_KEY, JSON.stringify(next));
+    try {
+      await AsyncStorage.setItem(OVERRIDES_KEY, JSON.stringify(next));
+    } catch (error) {
+      console.warn('Failed to persist overrides', error);
+    }
   }, []);
 
   const setDiners = useCallback(
