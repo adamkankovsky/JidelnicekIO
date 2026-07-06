@@ -2,7 +2,7 @@ import { Link } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
 import type { CampDay } from '@/data/types';
-import { formatDiners, getMealDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
+import { formatDiners, getMealTargetDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
 
 interface DayCardProps {
   day: CampDay;
@@ -16,11 +16,11 @@ export function DayCard({ day }: DayCardProps) {
 
   const dinersSet = new Set(
     day.meals.filter((m) => m.label).map((m) => {
-      const d = getMealDiners(m, day);
+      const d = getMealTargetDiners(m, day);
       return `${d.children}/${d.adults}`;
     }),
   );
-  const primaryDiners = getMealDiners(day.meals.find((m) => m.label) ?? day.meals[0], day);
+  const primaryDiners = getMealTargetDiners(day.meals.find((m) => m.label) ?? day.meals[0], day);
   const dinersLabel =
     dinersSet.size <= 1
       ? `${formatDiners(primaryDiners)} (${getTotalDiners(primaryDiners)})`

@@ -3,7 +3,7 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 
 import { useDiners } from '@/context/DinersContext';
 import type { CampDay, Meal } from '@/data/types';
-import { formatDiners, getMealDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
+import { formatDiners, getMealTargetDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
 import { useScaledMeal } from '@/hooks/useScaledIngredients';
 import { formatQuantity } from '@/utils/scaling';
 
@@ -122,7 +122,7 @@ interface MealSectionProps {
 
 function MealDinersRow({ day, meal }: MealSectionProps) {
   const { getMealDiners: getMealDinersOverride, setMealDiners } = useDiners();
-  const baseDiners = getMealDiners(meal, day);
+  const baseDiners = getMealTargetDiners(meal, day);
   const override = getMealDinersOverride(meal.id);
   const effective = override ?? baseDiners;
   const [editing, setEditing] = useState(false);

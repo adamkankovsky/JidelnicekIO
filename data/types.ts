@@ -24,7 +24,10 @@ export interface CampDay {
   id: string;
   date: string;
   dayName: string;
-  baseDiners: { children: number; adults: number };
+  /** What the ingredient quantities were originally written for */
+  baseDiners: DinersConfig;
+  /** Actual expected headcount for this day (scaling target) */
+  targetDiners: DinersConfig;
   meals: Meal[];
 }
 
@@ -69,6 +72,7 @@ export function formatDiners(d: DinersConfig): string {
   return `${d.children}D / ${d.adults}V`;
 }
 
-export function getMealDiners(meal: Meal, day: CampDay): DinersConfig {
-  return meal.diners ?? day.baseDiners;
+/** Returns the actual headcount for a specific meal (target for scaling) */
+export function getMealTargetDiners(meal: Meal, day: CampDay): DinersConfig {
+  return meal.diners ?? day.targetDiners;
 }

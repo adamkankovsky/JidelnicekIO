@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDiners } from '@/context/DinersContext';
 import { MEAL_PLAN } from '@/data/mealPlan';
-import { formatDiners, getMealDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
+import { formatDiners, getMealTargetDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
 
 export default function SettingsScreen() {
   const { coefficient, setCoefficient, clearAllOverrides } = useDiners();
@@ -82,7 +82,7 @@ export default function SettingsScreen() {
           {MEAL_PLAN.map((day) => {
             const uniqueDiners = new Set(
               day.meals.map((m) => {
-                const d = getMealDiners(m, day);
+                const d = getMealTargetDiners(m, day);
                 return `${d.children}/${d.adults}`;
               }),
             );
@@ -96,7 +96,7 @@ export default function SettingsScreen() {
                   </Text>
                   {allSame ? (
                     <Text className="text-sm text-camp-muted">
-                      {formatDiners(getMealDiners(day.meals[0], day))} ({getTotalDiners(getMealDiners(day.meals[0], day))})
+                      {formatDiners(getMealTargetDiners(day.meals[0], day))} ({getTotalDiners(getMealTargetDiners(day.meals[0], day))})
                     </Text>
                   ) : null}
                 </View>
@@ -104,7 +104,7 @@ export default function SettingsScreen() {
                   ? day.meals
                       .filter((m) => m.label)
                       .map((m) => {
-                        const d = getMealDiners(m, day);
+                        const d = getMealTargetDiners(m, day);
                         return (
                           <View key={m.id} className="ml-3 mt-1 flex-row items-center justify-between">
                             <Text className="text-xs text-camp-muted">

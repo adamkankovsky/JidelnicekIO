@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MealSection } from '@/components/MealSection';
 import { useDiners } from '@/context/DinersContext';
 import { MEAL_PLAN } from '@/data/mealPlan';
-import { formatDiners, getMealDiners, getTotalDiners } from '@/data/types';
+import { formatDiners, getMealTargetDiners, getTotalDiners } from '@/data/types';
 
 export function generateStaticParams() {
   return MEAL_PLAN.map((day) => ({ id: day.id }));
@@ -24,7 +24,7 @@ export default function DayDetailScreen() {
     );
   }
 
-  const primaryDiners = getMealDiners(day.meals.find((m) => m.label) ?? day.meals[0], day);
+  const primaryDiners = getMealTargetDiners(day.meals.find((m) => m.label) ?? day.meals[0], day);
 
   return (
     <>

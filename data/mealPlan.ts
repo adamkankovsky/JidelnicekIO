@@ -5,10 +5,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-0",
     date: "13.7.",
     dayName: "Neděle",
-    baseDiners: {
-      children: 25,
-      adults: 12,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 25, adults: 12 },
     meals: [
       {
         id: "day-0-meal-0",
@@ -67,10 +65,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-1",
     date: "14.7.",
     dayName: "Pondělí",
-    baseDiners: {
-      children: 25,
-      adults: 12,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 25, adults: 12 },
     meals: [
       {
         id: "day-1-meal-0",
@@ -318,10 +314,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-2",
     date: "15.7.",
     dayName: "Úterý",
-    baseDiners: {
-      children: 25,
-      adults: 11,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 25, adults: 11 },
     meals: [
       {
         id: "day-2-meal-0",
@@ -511,10 +505,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-3",
     date: "16.7.",
     dayName: "Středa",
-    baseDiners: {
-      children: 25,
-      adults: 14,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 25, adults: 14 },
     meals: [
       {
         id: "day-3-meal-0",
@@ -781,10 +773,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-4",
     date: "17.7.",
     dayName: "Čtvrtek",
-    baseDiners: {
-      children: 25,
-      adults: 12,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 25, adults: 12 },
     meals: [
       {
         id: "day-4-meal-0",
@@ -959,10 +949,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-5",
     date: "18.7.",
     dayName: "Pátek",
-    baseDiners: {
-      children: 25,
-      adults: 12,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 25, adults: 12 },
     meals: [
       {
         id: "day-5-meal-0",
@@ -1120,10 +1108,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-6",
     date: "19.7.",
     dayName: "Sobota",
-    baseDiners: {
-      children: 25,
-      adults: 12,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 25, adults: 12 },
     meals: [
       {
         id: "day-6-meal-0",
@@ -1357,10 +1343,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-7",
     date: "20.7.",
     dayName: "Neděle",
-    baseDiners: {
-      children: 23,
-      adults: 12,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 23, adults: 12 },
     meals: [
       {
         id: "day-7-meal-0",
@@ -1575,10 +1559,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-8",
     date: "21.7.",
     dayName: "Pondělí",
-    baseDiners: {
-      children: 23,
-      adults: 12,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 23, adults: 12 },
     meals: [
       {
         id: "day-8-meal-0",
@@ -1775,10 +1757,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-9",
     date: "22.7.",
     dayName: "Úterý",
-    baseDiners: {
-      children: 23,
-      adults: 12,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 23, adults: 12 },
     meals: [
       {
         id: "day-9-meal-0",
@@ -1938,10 +1918,8 @@ export const MEAL_PLAN: CampDay[] = [
     id: "day-10",
     date: "23.7.",
     dayName: "Středa",
-    baseDiners: {
-      children: 23,
-      adults: 14,
-    },
+    baseDiners: { children: 18, adults: 12 },
+    targetDiners: { children: 23, adults: 14 },
     meals: [
       {
         id: "day-10-meal-0",
