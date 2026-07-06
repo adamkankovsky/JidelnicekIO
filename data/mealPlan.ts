@@ -6,7 +6,7 @@ export const MEAL_PLAN: CampDay[] = [
     date: "13.7.",
     dayName: "Neděle",
     baseDiners: {
-      children: 18,
+      children: 25,
       adults: 12,
     },
     meals: [
@@ -35,6 +35,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: 60,
             unit: "ks",
             note: "50",
+            checkGlutenFree: true,
           },
           {
             name: "chleba",
@@ -57,6 +58,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "špekáčky 60ks(50), chleba 3ks, kečup, hořčice",
         recipe: "1. Rozdělejte oheň a nechte ho prohořet na žhavé uhlíky.\n2. Každý si nabodne špekáček na špejli nebo prut.\n3. Opékejte nad žhavými uhlíky, otáčejte, dokud špekáček nezíská zlatavou kůrčičku a nezačne praskat.\n4. Chleba nakrájejte na krajíce.\n5. Podávejte s kečupem a hořčicí.",
+        glutenWarning: true,
+        glutenNote: "Ověřit BL špekáčky. Podávat s BL chlebem.",
       },
     ],
   },
@@ -65,7 +68,7 @@ export const MEAL_PLAN: CampDay[] = [
     date: "14.7.",
     dayName: "Pondělí",
     baseDiners: {
-      children: 18,
+      children: 25,
       adults: 12,
     },
     meals: [
@@ -83,6 +86,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "z domu",
         recipe: "Buchty přivezené z domova. Připravte čaj – vodu převařte a zalijte sáčky.",
+        glutenWarning: true,
+        glutenNote: "Podat BL pečivo místo buchty.",
       },
       {
         id: "day-1-meal-1",
@@ -161,6 +166,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "špagety 8 bal., protlak rajčatový 3l(4), vepřové mleté 2,5kg (2 kg + 5 špekáčků), cibule 2ks, olej 0,5l, česnek 2 palice, bazalka 1x + provensál 1x",
         recipe: "1. Ve velkém hrnci přiveďte k varu osolená vodu a vařte špagety podle návodu al dente.\n2. Na oleji osmažte nakrájenou cibuli do sklovata.\n3. Přidejte mleté maso a osmažte dozlatova, rozmíchejte vidličkou.\n4. Přidejte prolisovaný česnek, chvilku restujte.\n5. Zalijte rajčatovým protlakem, přidejte bazalku a provensálské koření.\n6. Vařte na mírném ohni cca 15 minut, dokud omáčka nezhoustne.\n7. Osolte, opepřete dle chuti.\n8. Hotové špagety sceďte a servírujte s omáčkou.",
+        glutenWarning: true,
+        glutenNote: "Uvařit BL špagety zvlášť. Omáčka je BL.",
       },
       {
         id: "day-1-meal-3",
@@ -212,6 +219,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "tvaroh 4x(2),pomazánkové máslo 2x, hořčice 1 lžíce, pepř, sůl, chleba 1, pažitka",
         recipe: "1. Tvaroh rozmíchejte s pomazánkovým máslem do hladka.\n2. Přidejte lžíci hořčice, osolte a opepřete.\n3. Vmíchejte nasekanou pažitku.\n4. Chleba nakrájejte na krajíce a natřete pomazánkou.",
+        glutenWarning: true,
+        glutenNote: "Podat s BL chlebem.",
       },
       {
         id: "day-1-meal-4",
@@ -283,6 +292,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: 1,
             unit: "balení",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "18 l vody",
@@ -299,6 +309,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "mrkev 10 ks (7), celer 1ks(0,5), petržel 5ks(3), brambory 1 na hlavu (3 kg), cibule 10 ks (4), česnek palička (3 kusy), majoránka, pepř, sůl,vejce 10ks, bujon 1 balení, 18 l vody, chleba 2x (1,5)",
         recipe: "1. Mrkev, celer a petržel oloupejte a nakrájejte na kostičky. Cibuli nakrájejte najemno.\n2. V hrnci rozehřejte olej a osmažte cibuli do sklovata.\n3. Přidejte kořenovou zeleninu a chvilku restujte.\n4. Zalijte vodou (18 l), přidejte bujón a vařte cca 10 minut.\n5. Brambory oloupejte, nakrájejte na kostičky a přidejte do polévky.\n6. Vařte dalších 15 minut, dokud brambory nezměknou.\n7. Přidejte prolisovaný česnek, majoránku, sůl a pepř.\n8. Vejce rozšlehejte a pomalu za stálého míchání vlijte do vroucí polévky.\n9. Podávejte s nakrájeným chlebem.",
+        glutenWarning: true,
+        glutenNote: "Polévka OK s BL bujónem. Podat BL chleba.",
       },
     ],
   },
@@ -307,14 +319,15 @@ export const MEAL_PLAN: CampDay[] = [
     date: "15.7.",
     dayName: "Úterý",
     baseDiners: {
-      children: 18,
-      adults: 12,
+      children: 25,
+      adults: 11,
     },
     meals: [
       {
         id: "day-2-meal-0",
         type: "snidane",
         label: "Rohlík + Vysočina + okurka",
+        diners: { children: 25, adults: 12 },
         ingredients: [
           {
             name: "rohlíky",
@@ -343,11 +356,14 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "rohlíky 60ks(50), vysočina 1,5kg, okurka 7ks – 1 BN. CHOQUIK PENN INSTANT",
         recipe: "Vysočinu nakrájejte na plátky, okurky na kolečka. Rohlíky rozkrojte a naplňte vysočinou a okurkou.",
+        glutenWarning: true,
+        glutenNote: "Podat s BL rohlíkem.",
       },
       {
         id: "day-2-meal-1",
         type: "svacina",
         label: "Kakao + Buchta",
+        diners: { children: 25, adults: 12 },
         ingredients: [
           {
             name: "mlíko",
@@ -364,6 +380,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "mlíko 7l (5l), 1 balení choquik penny instant",
         recipe: "1. Mléko ohřejte v hrnci (nepřevařujte).\n2. Vmíchejte instantní kakao (Choquik) a rozmíchejte do rozpuštění.\n3. Buchty nakrájejte na porce a servírujte ke kakau.",
+        glutenWarning: true,
+        glutenNote: "Podat BL pečivo místo buchty.",
       },
       {
         id: "day-2-meal-2",
@@ -451,6 +469,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "vepř. plec 6kg(3), cibule 10ks, česnek 1 palička, olej 0,5l, paprika 4(2) bal., bobkový list 5ks, mouka, sůl, pepř, kreduffle 8x, jogurt 200g konzistence, knedlík 8x (5)",
         recipe: "1. Vepřovou plec nakrájejte na kostky (cca 2 cm).\n2. Cibuli nakrájejte najemno a osmažte na oleji do zlatova.\n3. Přidejte maso a opékejte, dokud nezbledne ze všech stran.\n4. Zasypte paprikou, rychle promíchejte (pozor, ať se nespálí).\n5. Přidejte prolisovaný česnek, bobkový list, sůl a pepř.\n6. Zalijte vodou, aby maso bylo ponořené, a vařte pod pokličkou na mírném ohni 1,5–2 hodiny.\n7. Průběžně míchejte a případně dolejte vodu.\n8. Na konec zahustěte jíškou z mouky rozmíchané v troše studené vody.\n9. Podávejte s knedlíky.",
+        glutenWarning: true,
+        glutenNote: "Před zahušťením moukou odebrat porci pro BL. Podat s BL chlebem místo knedlíku.",
       },
       {
         id: "day-2-meal-3",
@@ -472,6 +492,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "jogurty 30ks, chleba marmeláda (11×0,5g)",
         recipe: "Chleba nakrájejte na krajíce a natřete marmeládou. Jogurty rozdělte – každý dostane jeden. Servírujte.",
+        glutenWarning: true,
+        glutenNote: "Podat s BL chlebem.",
       },
       {
         id: "day-2-meal-4",
@@ -480,6 +502,8 @@ export const MEAL_PLAN: CampDay[] = [
         ingredients: [],
         ingredientsRaw: "",
         recipe: "1. Knedlíky (houskové nebo bramborové) nakrájejte na kolečka a opečte na oleji/másle na pánvi dozlatova.\n2. Na druhé pánvi osmažte nakrájenou cibuli do zlatova.\n3. Vajíčka rozšlehejte, osolte a opepřete.\n4. Ke knedlíkům přidejte osmaženou cibuli, zalijte rozšlehanými vajíčky.\n5. Míchejte na pánvi, dokud vajíčka nezatuhnou.\n6. Podávejte ihned, případně s okurkou nebo zeleninovým salátem.",
+        glutenWarning: true,
+        glutenNote: "Použít BL chléb místo knedlíků na přípravu.",
       },
     ],
   },
@@ -488,8 +512,8 @@ export const MEAL_PLAN: CampDay[] = [
     date: "16.7.",
     dayName: "Středa",
     baseDiners: {
-      children: 18,
-      adults: 12,
+      children: 25,
+      adults: 14,
     },
     meals: [
       {
@@ -530,6 +554,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "chleba 3,5ks, marmeláda 4ks, Rama 1,5ks",
         recipe: "Chleba nakrájejte na krajíce. Na každý krajíc natřete Ramu a poté marmeládu. Servírujte.",
+        glutenWarning: true,
+        glutenNote: "Podat BL chleba.",
       },
       {
         id: "day-3-meal-1",
@@ -538,6 +564,8 @@ export const MEAL_PLAN: CampDay[] = [
         ingredients: [],
         ingredientsRaw: "",
         recipe: "Bábovky napečené předem. Nakrájejte na porce a servírujte.",
+        glutenWarning: true,
+        glutenNote: "Podat BL sladké pečivo.",
       },
       {
         id: "day-3-meal-2",
@@ -561,6 +589,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: null,
             unit: "",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "cibule",
@@ -637,6 +666,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "fazole 3kg, protlak 3l,bujon, cibule 7ks, olej 0,5l, česnek 0,5 pal., kukuřice 4 plech., kmín, paprika, pepř, sůl, chleba 3x(1,5), párky 20(NÁHRADILO 4 kg plec) v sobotu 19.7. (9/4x)",
         recipe: "1. Fazole den předem namočte do studené vody. Druhý den slijte a propláchněte.\n2. Fazole vařte v čisté vodě cca 1–1,5 hodiny do měkka.\n3. Na oleji osmažte nakrájenou cibuli, přidejte prolisovaný česnek.\n4. Přidejte nakrájené párky a restujte.\n5. Vsypte kmín, papriku, pepř a sůl.\n6. Přidejte rajčatový protlak a bujón, promíchejte.\n7. Vmíchejte uvařené fazole a scezenou kukuřici.\n8. Vařte na mírném ohni 15–20 minut, aby se chutě propojily.\n9. Podávejte s chlebem.",
+        glutenWarning: true,
+        glutenNote: "Fazole OK. Podat s BL chlebem.",
       },
       {
         id: "day-3-meal-3",
@@ -664,6 +695,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "strouhaný sýr 30% eidam, česneková pomazánka, chleba 3x (6 balení)",
         recipe: "Chleba nakrájejte na krajíce. Natřete česnekovou pomazánkou a posypte strouhaným sýrem.",
+        glutenWarning: true,
+        glutenNote: "Podat s BL chlebem.",
       },
       {
         id: "day-3-meal-4",
@@ -739,6 +772,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "8 bal. těstovin vretena, sůl, pepř, měkký salám 1,0kg, rajčata 2,0kg, paprika 2 kg, okurka 6ks, majonéza 1x, jogurt 2x velký bílý",
         recipe: "1. Těstoviny (vřetena) uvařte v osolené vodě al dente, sceďte a nechte vychladnout.\n2. Měkký salám nakrájejte na kostičky.\n3. Rajčata, papriku a okurky nakrájejte na kousky.\n4. Vychladlé těstoviny smíchejte se zeleninou a salámem.\n5. Zálivku připravte z majonézy a jogurtu, osolte a opepřete.\n6. Zálivku vmíchejte do salátu a promíchejte.\n7. Nechte alespoň 30 minut uležet v chladu.",
+        glutenWarning: true,
+        glutenNote: "Připravit malou porci s BL těstovinami.",
       },
     ],
   },
@@ -747,7 +782,7 @@ export const MEAL_PLAN: CampDay[] = [
     date: "17.7.",
     dayName: "Čtvrtek",
     baseDiners: {
-      children: 18,
+      children: 25,
       adults: 12,
     },
     meals: [
@@ -771,6 +806,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "rohlíky 60ks, Nutella 3x",
         recipe: "Rohlíky rozkrojte napůl a natřete Nutellou.",
+        glutenWarning: true,
+        glutenNote: "Podat s BL rohlíkem. Nutella je BL.",
       },
       {
         id: "day-4-meal-1",
@@ -792,6 +829,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "chleba 3x, tvaroh pomazánka",
         recipe: "Tvarohovou pomazánku rozmíchejte. Chleba nakrájejte na krajíce a natřete pomazánkou.",
+        glutenWarning: true,
+        glutenNote: "Podat s BL chlebem.",
       },
       {
         id: "day-4-meal-2",
@@ -827,6 +866,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: 7,
             unit: "l",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "mouka",
@@ -855,6 +895,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "vepřová plec 6kg, cibule 14x, olej 0,5, bujon 7l, mouka 7 lžic, sůl, pepř, brambory opečené",
         recipe: "1. Vepřovou plec nakrájejte na plátky nebo větší kousky.\n2. Maso osolte, opepřete a obalte v mouce.\n3. Na oleji zprudka opečte maso ze všech stran.\n4. Cibuli nakrájejte na půlkolečka a osmažte do zlatova.\n5. Maso vložte do pekáče, přidejte osmaženou cibuli.\n6. Zalijte bujónem (cca 7 l) a pečte v troubě/vařte na ohni pod pokličkou cca 1,5–2 hodiny.\n7. Průběžně kontrolujte a případně dolijte tekutinu.\n8. Brambory oloupejte, nakrájejte na kolečka a opečte na pánvi dozlatova.\n9. Podávejte maso s omáčkou a opečenými brambory.",
+        glutenWarning: true,
+        glutenNote: "Maso pro BL obalit v BL mouce. Smažit v čistém oleji.",
       },
       {
         id: "day-4-meal-3",
@@ -908,6 +950,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "kečup, sýr na strouhání, česnek, vejce 15ks, olej 3l, chleba 4x",
         recipe: "1. Chleba nakrájejte na silnější krajíce (cca 1,5 cm).\n2. Vejce rozšlehejte s trochou mléka, osolte.\n3. Každý krajíc namočte ve vajíčku z obou stran.\n4. V hluboké pánvi rozehřejte olej a smažte topinky dozlatova z obou stran.\n5. Hotové topinky ještě horké potřete česnekem (rozpůleným stroužkem).\n6. Posypte strouhaným sýrem a podávejte s kečupem.",
+        glutenWarning: true,
+        glutenNote: "Smažit BL chleba ve vajíčku v čistém oleji zvlášť.",
       },
     ],
   },
@@ -916,8 +960,8 @@ export const MEAL_PLAN: CampDay[] = [
     date: "18.7.",
     dayName: "Pátek",
     baseDiners: {
-      children: 18,
-      adults: 14,
+      children: 25,
+      adults: 12,
     },
     meals: [
       {
@@ -958,6 +1002,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "3ks chleba, 15 vajec, 4x pomazán. máslo, tavený sýr 3x, pažitka (májka)",
         recipe: "1. Vejce uvařte natvrdo (cca 10 minut ve vroucí vodě), ochlaďte a oloupejte.\n2. Vejce nastrouhejte na hrubém struhadle.\n3. Přidejte pomazánkové máslo a rozmíchaný tavený sýr.\n4. Vše promíchejte do hladka, osolte a opepřete.\n5. Vmíchejte nasekanou pažitku.\n6. Chleba nakrájejte a natřete pomazánkou.",
+        glutenWarning: true,
+        glutenNote: "Podat s BL chlebem.",
       },
       {
         id: "day-5-meal-1",
@@ -991,11 +1037,14 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "jablko 32ks, sušenka 32x, rohlíky 64k, vysočina – nakrájet na špalíky 6cm/ na osobu 3cm/rohlík",
         recipe: "Vysočinu nakrájejte na špalíky (cca 6 cm, na osobu 3 cm na rohlík). Rohlíky rozkrojte a vložte vysočinu. Ke svačině přidejte jablko a sušenku.",
+        glutenWarning: true,
+        glutenNote: "Podat BL rohlík + BL sušenku.",
       },
       {
         id: "day-5-meal-2",
         type: "obed",
         label: "Sekaná + brambory",
+        diners: { children: 25, adults: 13 },
         ingredients: [
           {
             name: "vejce",
@@ -1048,6 +1097,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "vejce 10x, česnek 1 pal., strouhanka, sůl, cibule, mleté 5kg H 3 kg V, brambory 10kg, párky 10 ks",
         recipe: "1. Mleté maso smíchejte s vejci, strouhankou, prolisovaným česnekem a najemno nakrájenou cibulí.\n2. Osolte a dobře propracujte.\n3. Směs vytvarujte do formy na sekané (nebo na plech vyložený pečicím papírem).\n4. Do středu můžete vložit párky jako náplň.\n5. Pečte v troubě při 180 °C cca 60–70 minut.\n6. Brambory oloupejte, nakrájejte a uvařte v osolené vodě do měkka.\n7. Sekané nechte chvíli odpočinout, nakrájejte na plátky.\n8. Podávejte s vařenými brambory.",
+        glutenWarning: true,
+        glutenNote: "Oddělit porci mletého, přidat BL strouhanku. Péct zvlášť.",
       },
       {
         id: "day-5-meal-3",
@@ -1070,7 +1121,7 @@ export const MEAL_PLAN: CampDay[] = [
     date: "19.7.",
     dayName: "Sobota",
     baseDiners: {
-      children: 18,
+      children: 25,
       adults: 12,
     },
     meals: [
@@ -1124,6 +1175,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "chleba 3x, vajíčka 90, sůl, pepř, 0,5 olej, pažitka",
         recipe: "1. Na pánvi rozehřejte olej.\n2. Vajíčka rozšlehejte, osolte a opepřete.\n3. Vlijte na pánev a za stálého míchání vařte, dokud vajíčka nezatuhnou, ale zůstanou šťavnatá.\n4. Na konci vmíchejte nasekanou pažitku.\n5. Chleba nakrájejte na krajíce.\n6. Podávejte míchaná vajíčka na chlebu.",
+        glutenWarning: true,
+        glutenNote: "Podat BL chleba.",
       },
       {
         id: "day-6-meal-1",
@@ -1229,6 +1282,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "8x4x100g krabic",
         recipe: "Tatranky rozbalte a rozdělte – každý dostane jednu.",
+        glutenWarning: true,
+        glutenNote: "Podat BL sušenku/oplatku.",
       },
       {
         id: "day-6-meal-4",
@@ -1270,6 +1325,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: null,
             unit: "",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "olej 0",
@@ -1292,6 +1348,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "chleba 3x, špek, párky 20ks, cibule, česnek 1 pal., bujon, olej 0,5l, čočka 2kg",
         recipe: "1. Čočku propláchněte pod tekoucí vodou.\n2. Špek nakrájejte na kostičky a osmažte na pánvi.\n3. Přidejte nakrájenou cibuli a osmažte do zlatova.\n4. Ve velkém hrnci povařte čočku ve vodě s bujónem cca 20–25 minut.\n5. Přidejte osmažený špek s cibulí a prolisovaný česnek.\n6. Párky nakrájejte na kolečka a přidejte do polévky.\n7. Vařte dalších 5–10 minut, osolte a opepřete.\n8. Podávejte s nakrájeným chlebem.",
+        glutenWarning: true,
+        glutenNote: "Polévka OK (ověřit bujón). Podat BL chleba.",
       },
     ],
   },
@@ -1300,7 +1358,7 @@ export const MEAL_PLAN: CampDay[] = [
     date: "20.7.",
     dayName: "Neděle",
     baseDiners: {
-      children: 18,
+      children: 23,
       adults: 12,
     },
     meals: [
@@ -1308,6 +1366,7 @@ export const MEAL_PLAN: CampDay[] = [
         id: "day-7-meal-0",
         type: "snidane",
         label: "Kakao + vánočka",
+        diners: { children: 24, adults: 12 },
         ingredients: [
           {
             name: "6l mléko",
@@ -1330,11 +1389,14 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "6l mléko, 1×450g granko, vánočka 9ks",
         recipe: "1. Mléko ohřejte v hrnci (nepřevařujte).\n2. Vmíchejte Granko a rozšlehejte do rozpuštění.\n3. Vánočky nakrájejte na plátky.\n4. Podávejte kakao v hrncích s vánočkou.",
+        glutenWarning: true,
+        glutenNote: "Podat BL vánočku/pečivo.",
       },
       {
         id: "day-7-meal-1",
         type: "svacina",
         label: "Pomazánka z paštiky + rohlík",
+        diners: { children: 24, adults: 12 },
         ingredients: [
           {
             name: "rohlíky",
@@ -1347,6 +1409,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: 5,
             unit: "x",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "sýr tavený",
@@ -1357,6 +1420,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "rohlíky 30ks, paštika májka 5x, sýr tavený 2x balení",
         recipe: "1. Paštiku (Májku) rozmíchejte s taveným sýrem do hladké pomazánky.\n2. Rohlíky rozkrojte a natřete pomazánkou z paštiky.",
+        glutenWarning: true,
+        glutenNote: "Podat BL rohlík. Ověřit BL paštiku.",
       },
       {
         id: "day-7-meal-2",
@@ -1402,6 +1467,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "kuř. prsa 18ks, brambory 6kg, vejce, mouka, strouhanka, olej 3l",
         recipe: "1. Kuřecí prsa naklepejte, osolte a opepřete.\n2. Připravte tři misky: mouku, rozšlehaná vejce, strouhanku.\n3. Každý plátek postupně obalte v mouce, vejci a strouhance.\n4. V hluboké pánvi rozehřejte olej a smažte řízky dozlatova z obou stran (cca 3–4 minuty na každé straně).\n5. Hotové řízky odkládejte na papírovou utěrku.\n6. Brambory oloupejte, nakrájejte a uvařte v osolené vodě do měkka.\n7. Podávejte řízky s vařenými brambory.",
+        glutenWarning: true,
+        glutenNote: "Obalit 1 prs v BL mouce a BL strouhance. Smažit v čistém oleji zvlášť.",
       },
       {
         id: "day-7-meal-3",
@@ -1452,6 +1519,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: null,
             unit: "",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "5kg",
@@ -1498,6 +1566,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "brambory 8kg, cibule 10ks, šunkový salám 1,5kg, vejce 30ks, smetana 1,5 l, sůl, pepř, olej",
         recipe: "1. Brambory oloupejte a nakrájejte na tenká kolečka.\n2. Cibuli nakrájejte na kolečka, salám na kostičky.\n3. Pekáč vymažte olejem.\n4. Vrstvěte: brambory – cibule – salám – brambory – cibule – salám (2–3 vrstvy).\n5. Vejce rozšlehejte se smetanou, osolte a opepřete.\n6. Zálivku nalijte přes vrstvené brambory.\n7. Pečte v troubě při 180 °C cca 45–60 minut, dokud brambory nejsou měkké a povrch zlatavý.",
+        glutenWarning: true,
+        glutenNote: "Ověřit šunkový salám (BL).",
       },
     ],
   },
@@ -1506,8 +1576,8 @@ export const MEAL_PLAN: CampDay[] = [
     date: "21.7.",
     dayName: "Pondělí",
     baseDiners: {
-      children: 17,
-      adults: 11,
+      children: 23,
+      adults: 12,
     },
     meals: [
       {
@@ -1532,10 +1602,13 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: null,
             unit: "",
             note: "5 pytlů",
+            checkGlutenFree: true,
           },
         ],
         ingredientsRaw: "jogurt, marmeláda, lupinky (5 pytlů)",
         recipe: "Lupínky nasypte do misek, přidejte jogurt a marmeládu dle chuti. Servírujte.",
+        glutenWarning: true,
+        glutenNote: "Ověřit BL lupínky (kukuřičné = většinou OK).",
       },
       {
         id: "day-8-meal-1",
@@ -1557,6 +1630,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "rohlíky 65ks, pomazánka",
         recipe: "Rohlíky rozkrojte a natřete pomazánkou. Servírujte.",
+        glutenWarning: true,
+        glutenNote: "Podat BL rohlíky.",
       },
       {
         id: "day-8-meal-2",
@@ -1602,6 +1677,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "mletý 2,5kg, protlak 3l, kečup 0,5, těstoviny 8 bal. kolínka",
         recipe: "1. Z mletého masa, vejce, strouhanky, soli a pepře vytvarujte kuličky (cca 3 cm).\n2. Kuličky obalte v mouce a opečte na oleji dozlatova.\n3. V hrnci rozehřejte rajčatový protlak s trochou vody.\n4. Přidejte kečup, osolte a opepřete.\n5. Kuličky vložte do rajské omáčky a duste 15–20 minut.\n6. Těstoviny (kolínka) uvařte v osolené vodě al dente.\n7. Podávejte těstoviny s rajskou omáčkou a masovými kuličkami.",
+        glutenWarning: true,
+        glutenNote: "BL těstoviny zvlášť. Kuličky: oddělit porci mletého, obalit BL moukou.",
       },
       {
         id: "day-8-meal-3",
@@ -1617,6 +1694,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "3ks chleba",
         recipe: "Chleba nakrájejte na krajíce. Natřete Ramou a posypte strouhaným sýrem.",
+        glutenWarning: true,
+        glutenNote: "Podat BL chleba.",
       },
       {
         id: "day-8-meal-4",
@@ -1628,6 +1707,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: null,
             unit: "",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "3ks cibule",
@@ -1686,6 +1766,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "65ks tortily, 3ks cibule, 1kg mrkev, 1x červené zelí, 10ks prs, 4x, ledový salát 4x, rajčata 2kg, jogurt 2ks, česnek 3x",
         recipe: "1. Kuřecí prsa nakrájejte na proužky, osolte, opepřete a opečte na pánvi dozlatova.\n2. Cibuli nakrájejte na proužky a osmažte.\n3. Mrkev nastrouhejte na hrubém struhadle.\n4. Červené zelí nakrouhejte najemno.\n5. Ledový salát natrhejte na kousky, rajčata nakrájejte na kostičky.\n6. Jogurt smíchejte s prolisovaným česnekem a solí – vznikne česneková zálivka.\n7. Tortilly krátce ohřejte na suché pánvi.\n8. Na každou tortillu dejte kuřecí maso, zeleninu a zakápněte česnekovou zálivkou.\n9. Zarolujte a podávejte.",
+        glutenWarning: true,
+        glutenNote: "Použít kukuřičné (BL) tortilly.",
       },
     ],
   },
@@ -1694,7 +1776,7 @@ export const MEAL_PLAN: CampDay[] = [
     date: "22.7.",
     dayName: "Úterý",
     baseDiners: {
-      children: 17,
+      children: 23,
       adults: 12,
     },
     meals: [
@@ -1712,6 +1794,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "2ks chleba",
         recipe: "Paštiku (Májku) natřete na chleba nakrájený na krajíce. Můžete přidat i pomazánku.",
+        glutenWarning: true,
+        glutenNote: "Podat BL chleba. Ověřit BL paštiku.",
       },
       {
         id: "day-9-meal-1",
@@ -1743,6 +1827,7 @@ export const MEAL_PLAN: CampDay[] = [
             quantity: 1,
             unit: "lahev",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "kari 2 lžíce",
@@ -1789,11 +1874,14 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "rýže 20 pytlíků 10 minut, kuřecí prsa 15ks (2kg), sojovka 1 lahev, kari 2 lžíce, česnek 0,5 palička, cibule 8ks, porek 3ks, paprika 6x, arašídy 1 pytlík",
         recipe: "1. Rýži uvařte podle návodu (pytlíky – 10 minut ve vroucí vodě).\n2. Kuřecí prsa nakrájejte na proužky, osolte a opečte na oleji dozlatova.\n3. Cibuli a pórek nakrájejte na kolečka, papriku na proužky.\n4. Na pánvi osmažte cibuli a pórek, přidejte papriku.\n5. Přidejte prolisovaný česnek a kari koření, chvilku restujte.\n6. Vmíchejte opečené kuřecí maso ke zelenině.\n7. Zalijte sojovou omáčkou a promíchejte.\n8. Duste 5–10 minut, až se chutě propojí.\n9. Podávejte na rýži, posypané arašídy.",
+        glutenWarning: true,
+        glutenNote: "Použít tamari místo sojovky. Rýže a maso OK.",
       },
       {
         id: "day-9-meal-3",
         type: "svacina",
         label: "Rohlík + pomazánka vajíčková",
+        diners: { children: 23, adults: 14 },
         ingredients: [
           {
             name: "65ks rohlík",
@@ -1804,17 +1892,21 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "65ks rohlík",
         recipe: "Vajíčkovou pomazánku připravte stejně jako den 5 (vajíčka natvrdo, nastrouhejte, smíchejte s pomazánkovým máslem). Rohlíky rozkrojte a natřete.",
+        glutenWarning: true,
+        glutenNote: "Podat BL rohlík.",
       },
       {
         id: "day-9-meal-4",
         type: "vecere",
         label: "Buřty + chleba + kečup – OHEŇ KONEC",
+        diners: { children: 23, adults: 14 },
         ingredients: [
           {
             name: "buřty",
             quantity: 50,
             unit: "ks",
             note: null,
+            checkGlutenFree: true,
           },
           {
             name: "chleba",
@@ -1837,6 +1929,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "buřty 50ks, chleba 4ks, kečup, hořčice",
         recipe: "1. Rozdělejte táborový oheň (poslední oheň tábora!).\n2. Nechte prohořet na žhavé uhlíky.\n3. Buřty nabodněte na špejle nebo pruty a opékejte nad uhlíky.\n4. Chleba nakrájejte na krajíce.\n5. Podávejte s kečupem a hořčicí.",
+        glutenWarning: true,
+        glutenNote: "Podat BL chleba. Ověřit BL buřty.",
       },
     ],
   },
@@ -1845,8 +1939,8 @@ export const MEAL_PLAN: CampDay[] = [
     date: "23.7.",
     dayName: "Středa",
     baseDiners: {
-      children: 17,
-      adults: 12,
+      children: 23,
+      adults: 14,
     },
     meals: [
       {
@@ -1951,6 +2045,8 @@ export const MEAL_PLAN: CampDay[] = [
         ],
         ingredientsRaw: "hrubá mouka 2,5kg, vajíčka 12x, tvaroh 4kg, cukr 300g, sůl, cukr na žahour 0,5kg, máslo 2x, maliny + marmeláda 3x, 4ks brambor",
         recipe: "1. Brambory uvařte ve slupce, oloupejte a nakrájejte najemno (nebo nastrouhejte).\n2. Smíchejte s hrubou moukou, vejci, tvarohem, cukrem a špetkou soli.\n3. Zpracujte těsto – mělo by být vláčné a ne příliš lepivé.\n4. Z těsta vytvarujte válečky a krájejte noky (cca 2 cm).\n5. Noky vařte v osolené vodě – jakmile vyplavou na hladinu, jsou hotové (cca 3–5 minut).\n6. Ovocný rozvar: maliny a marmeládu rozvařte v hrnci s trochou vody a cukrem.\n7. Hotové noky polijte rozpuštěným máslem a ovocným rozvarem.\n8. Posypte moučkovým cukrem.",
+        glutenWarning: true,
+        glutenNote: "Připravit malou porci noků z BL mouky zvlášť.",
       },
     ],
   },

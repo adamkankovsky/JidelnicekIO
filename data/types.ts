@@ -5,6 +5,7 @@ export interface Ingredient {
   quantity: number | null;
   unit: string;
   note?: string | null;
+  checkGlutenFree?: boolean;
 }
 
 export interface Meal {
@@ -14,6 +15,9 @@ export interface Meal {
   ingredients: Ingredient[];
   ingredientsRaw?: string;
   recipe?: string;
+  glutenWarning?: boolean;
+  glutenNote?: string;
+  diners?: DinersConfig;
 }
 
 export interface CampDay {
@@ -63,4 +67,8 @@ export function getTotalDiners(d: DinersConfig): number {
 
 export function formatDiners(d: DinersConfig): string {
   return `${d.children}D / ${d.adults}V`;
+}
+
+export function getMealDiners(meal: Meal, day: CampDay): DinersConfig {
+  return meal.diners ?? day.baseDiners;
 }
