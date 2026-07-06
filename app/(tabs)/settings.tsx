@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDiners } from '@/context/DinersContext';
+import { useLocalBackup } from '@/context/LocalDataContext';
 import { MEAL_PLAN } from '@/data/mealPlan';
 import { formatDiners, getMealTargetDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
 import { downloadTextFile } from '@/utils/downloadFile';
@@ -9,6 +11,8 @@ import { buildAllIngredientsCsv, buildMealPlanCsv, buildShoppingListCsv } from '
 
 export default function SettingsScreen() {
   const { coefficient, setCoefficient, clearAllOverrides, overrides, mealDinersOverrides } = useDiners();
+  const { exportBackup, importBackup, savedAt } = useLocalBackup();
+  const [importText, setImportText] = useState('');
 
   const coefficientPercent = Math.round(coefficient * 100);
   const exportConfig = { coefficient, overrides, mealDinersOverrides };
@@ -17,6 +21,27 @@ export default function SettingsScreen() {
     const ok = downloadTextFile(filename, content);
     if (!ok) {
       Alert.alert('Export', 'Stažení souboru je dostupné ve webové verzi aplikace.');
+    }
+  };
+
+  const handleBackupDownload = () => {
+    const ok = downloadTextFile('jidelnicek-zaloha.json', exportBackup());
+    if (!ok) {
+      Alert.alert('Záloha', 'Stažení zálohy je dostupné ve webové verzi aplikace.');
+    }
+  };
+
+  const handleBackupImport = () => {
+    if (!importText.trim()) {
+      Alert.alert('Obnovení', 'Vložte obsah zálohy nebo nahrajte soubor.');
+      return;
+    }
+    try {
+      importBackup(importText);
+      setImportText('');
+      Alert.alert('Obnoveno', 'Lokální data byla načtena ze zálohy.');
+    } catch {
+      Alert.alert('Chyba', 'Soubor zálohy není platný JSON.');
     }
   };
 
@@ -130,6 +155,38 @@ export default function SettingsScreen() {
               </View>
             );
           })}
+        </View>
+
+        <View className="mb-6 rounded-2xl border border-camp-accent bg-white p-4">
+          <Text className="mb-2 text-base font-semibold text-camp-text">Lokální data</Text>
+          <Text className="mb-2 text-sm text-camp-muted">
+            Všechny vaše změny (nákup, ceny, koeficient, úpravy) se ukládají lokálně v prohlížeči a mají přednost
+            před online verzí aplikace. Aktualizace aplikace je nepřepíše.
+          </Text>
+          {savedAt ? (
+            <Text className="mb-4 text-xs text-camp-muted">
+              Naposledy uloženo: {new Date(savedAt).toLocaleString('cs-CZ')}
+            </Text>
+          ) : null}
+          <Pressable
+            onPress={handleBackupDownload}
+            className="mb-3 rounded-xl bg-camp-primary py-3 active:opacity-70">
+            <Text className="text-center text-base font-semibold text-white">Stáhnout zálohu (JSON)</Text>
+          </Pressable>
+          <Text className="mb-2 text-sm text-camp-muted">Obnovit ze zálohy (vložte JSON):</Text>
+          <TextInput
+            value={importText}
+            onChangeText={setImportText}
+            placeholder="Vložte obsah souboru jidelnicek-zaloha.json…"
+            multiline
+            numberOfLines={4}
+            className="mb-3 min-h-[96px] rounded-xl border border-camp-accent px-4 py-3 text-sm text-camp-text"
+          />
+          <Pressable
+            onPress={handleBackupImport}
+            className="rounded-xl bg-camp-secondary/20 py-3 active:opacity-70">
+            <Text className="text-center text-base font-semibold text-camp-primary">Obnovit ze zálohy</Text>
+          </Pressable>
         </View>
 
         <View className="mb-6 rounded-2xl border border-camp-accent bg-white p-4">

@@ -6,9 +6,7 @@ import 'react-native-reanimated';
 import '../global.css';
 
 import { useColorScheme } from '@/components/useColorScheme';
-import { DinersProvider } from '@/context/DinersContext';
-import { PurchaseProvider } from '@/context/PurchaseContext';
-import { ShoppingProvider } from '@/context/ShoppingContext';
+import { LocalDataProvider } from '@/context/LocalDataContext';
 
 export {
   ErrorBoundary,
@@ -52,13 +50,9 @@ export default function RootLayout() {
   }
 
   return (
-    <DinersProvider>
-      <ShoppingProvider>
-        <PurchaseProvider>
-          <RootLayoutNav />
-        </PurchaseProvider>
-      </ShoppingProvider>
-    </DinersProvider>
+    <LocalDataProvider>
+      <RootLayoutNav />
+    </LocalDataProvider>
   );
 }
 

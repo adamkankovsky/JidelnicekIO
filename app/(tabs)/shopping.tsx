@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -23,11 +23,18 @@ function computeEstimatedTotal(): number {
 const ESTIMATED_TOTAL = computeEstimatedTotal();
 
 export default function ShoppingScreen() {
-  const { isLoading, totalCount, checkedCount, clearAllChecked, hidePurchased, setHidePurchased } = useShopping();
+  const {
+    totalCount,
+    checkedCount,
+    clearAllChecked,
+    hidePurchased,
+    setHidePurchased,
+    shopFilter,
+    setShopFilter,
+    periodFilter,
+    setPeriodFilter,
+  } = useShopping();
   const { totalSpent } = usePurchases();
-
-  const [shopFilter, setShopFilter] = useState<string | null>(null);
-  const [periodFilter, setPeriodFilter] = useState<{ from: string; to: string } | null>(null);
 
   const progress = totalCount > 0 ? checkedCount / totalCount : 0;
   const remaining = totalCount - checkedCount;
@@ -40,29 +47,20 @@ export default function ShoppingScreen() {
   };
 
   const toggleShop = (shop: string) => {
-    setShopFilter((prev) => (prev === shop ? null : shop));
+    setShopFilter(shopFilter === shop ? null : shop);
   };
 
   const togglePeriod = (period: { from: string; to: string }) => {
-    setPeriodFilter((prev) =>
-      prev?.from === period.from && prev?.to === period.to ? null : period,
-    );
+    const active = periodFilter?.from === period.from && periodFilter?.to === period.to;
+    setPeriodFilter(active ? null : period);
   };
-
-  if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-camp-bg">
-        <Text className="text-camp-muted">Načítání seznamu…</Text>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView className="flex-1 bg-camp-bg" edges={['bottom']}>
       <ScrollView className="flex-1" contentContainerClassName="px-4 pb-8 pt-4">
         <Text className="mb-1 text-2xl font-bold text-camp-primary">Nákup surovin</Text>
         <Text className="mb-4 text-sm text-camp-muted">
-          Klepněte na položku pro označení jako nakoupené. Stav se uloží i po zavření aplikace.
+          Klepněte na položku pro označení jako nakoupené. Všechny změny se ukládají lokálně v prohlížeči a mají přednost před online verzí aplikace.
         </Text>
 
         {/* Progress + actions */}
