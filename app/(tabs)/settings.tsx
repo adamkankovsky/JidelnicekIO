@@ -1,14 +1,24 @@
-import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDiners } from '@/context/DinersContext';
 import { MEAL_PLAN } from '@/data/mealPlan';
 import { formatDiners, getMealTargetDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
+import { downloadTextFile } from '@/utils/downloadFile';
+import { buildAllIngredientsCsv, buildMealPlanCsv, buildShoppingListCsv } from '@/utils/exportIngredients';
 
 export default function SettingsScreen() {
-  const { coefficient, setCoefficient, clearAllOverrides } = useDiners();
+  const { coefficient, setCoefficient, clearAllOverrides, overrides, mealDinersOverrides } = useDiners();
 
   const coefficientPercent = Math.round(coefficient * 100);
+  const exportConfig = { coefficient, overrides, mealDinersOverrides };
+
+  const handleDownload = (filename: string, content: string) => {
+    const ok = downloadTextFile(filename, content);
+    if (!ok) {
+      Alert.alert('Export', 'Stažení souboru je dostupné ve webové verzi aplikace.');
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-camp-bg" edges={['bottom']}>
@@ -120,6 +130,29 @@ export default function SettingsScreen() {
               </View>
             );
           })}
+        </View>
+
+        <View className="mb-6 rounded-2xl border border-camp-accent bg-white p-4">
+          <Text className="mb-2 text-base font-semibold text-camp-text">Export surovin</Text>
+          <Text className="mb-4 text-sm text-camp-muted">
+            Stáhněte tabulkový soubor CSV pro Excel nebo Google Tabulky. Jídelníček obsahuje přepočtená množství dle
+            aktuálního koeficientu a úprav.
+          </Text>
+          <Pressable
+            onPress={() => handleDownload('jidelnicek-suroviny.csv', buildAllIngredientsCsv(exportConfig))}
+            className="mb-3 rounded-xl bg-camp-primary py-3 active:opacity-70">
+            <Text className="text-center text-base font-semibold text-white">Stáhnout vše (CSV)</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => handleDownload('jidelnicek-detail.csv', buildMealPlanCsv(exportConfig))}
+            className="mb-3 rounded-xl bg-camp-secondary/20 py-3 active:opacity-70">
+            <Text className="text-center text-base font-semibold text-camp-primary">Stáhnout jídelníček (CSV)</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => handleDownload('nakupni-seznam.csv', buildShoppingListCsv())}
+            className="rounded-xl bg-camp-accent py-3 active:opacity-70">
+            <Text className="text-center text-base font-semibold text-camp-primary">Stáhnout nákupní seznam (CSV)</Text>
+          </Pressable>
         </View>
 
         <View className="mt-2 rounded-2xl border border-camp-accent bg-white p-4">

@@ -1,15 +1,24 @@
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ShoppingCategory } from '@/components/ShoppingCategory';
 import { useShopping } from '@/context/ShoppingContext';
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
+import { downloadTextFile } from '@/utils/downloadFile';
+import { buildShoppingListCsv } from '@/utils/exportIngredients';
 
 export default function ShoppingScreen() {
   const { isLoading, totalCount, checkedCount, clearAllChecked, hidePurchased, setHidePurchased } = useShopping();
 
   const progress = totalCount > 0 ? checkedCount / totalCount : 0;
   const remaining = totalCount - checkedCount;
+
+  const handleDownload = () => {
+    const ok = downloadTextFile('nakupni-seznam.csv', buildShoppingListCsv());
+    if (!ok) {
+      Alert.alert('Export', 'Stažení souboru je dostupné ve webové verzi aplikace.');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -63,6 +72,12 @@ export default function ShoppingScreen() {
               <Text className="text-center text-sm font-semibold text-camp-warm">Vynulovat</Text>
             </Pressable>
           </View>
+
+          <Pressable
+            onPress={handleDownload}
+            className="mt-3 rounded-xl bg-camp-secondary/20 py-2.5 active:opacity-70">
+            <Text className="text-center text-sm font-semibold text-camp-primary">Stáhnout seznam (CSV)</Text>
+          </Pressable>
         </View>
 
         {INGREDIENT_CATEGORIES.map((category) => (
