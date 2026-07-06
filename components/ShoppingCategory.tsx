@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 
 import type { IngredientCategory } from '@/data/types';
+import { DEAL_OFFERS } from '@/data/deals';
 import { ShoppingItemRow } from '@/components/ShoppingItemRow';
 import { useShopping } from '@/context/ShoppingContext';
 import { getShoppingItemKey } from '@/utils/shopping';
@@ -8,14 +9,36 @@ import { getShoppingItemKey } from '@/utils/shopping';
 interface ShoppingCategoryProps {
   category: IngredientCategory;
   hidePurchased: boolean;
+  shopFilter: string | null;
+  periodFilter: { from: string; to: string } | null;
 }
 
-export function ShoppingCategory({ category, hidePurchased }: ShoppingCategoryProps) {
+function itemMatchesFilters(
+  category: string,
+  itemName: string,
+  shopFilter: string | null,
+  periodFilter: { from: string; to: string } | null,
+): boolean {
+  if (!shopFilter && !periodFilter) return true;
+  const key = `${category}::${itemName}`;
+  const deals = DEAL_OFFERS[key] ?? [];
+  if (deals.length === 0) return !shopFilter && !periodFilter;
+  return deals.some((d) => {
+    if (shopFilter && d.shop !== shopFilter) return false;
+    if (periodFilter && (d.validFrom !== periodFilter.from || d.validTo !== periodFilter.to)) return false;
+    return true;
+  });
+}
+
+export function ShoppingCategory({ category, hidePurchased, shopFilter, periodFilter }: ShoppingCategoryProps) {
   const { isChecked } = useShopping();
 
   const visibleItems = category.items.filter((item) => {
-    if (!hidePurchased) return true;
-    return !isChecked(getShoppingItemKey(category.category, item));
+    if (hidePurchased && isChecked(getShoppingItemKey(category.category, item))) return false;
+    if (shopFilter || periodFilter) {
+      return itemMatchesFilters(category.category, item.name, shopFilter, periodFilter);
+    }
+    return true;
   });
 
   if (visibleItems.length === 0) {
@@ -35,7 +58,13 @@ export function ShoppingCategory({ category, hidePurchased }: ShoppingCategoryPr
         </Text>
       </View>
       {visibleItems.map((item) => (
-        <ShoppingItemRow key={getShoppingItemKey(category.category, item)} category={category.category} item={item} />
+        <ShoppingItemRow
+          key={getShoppingItemKey(category.category, item)}
+          category={category.category}
+          item={item}
+          shopFilter={shopFilter}
+          periodFilter={periodFilter}
+        />
       ))}
     </View>
   );

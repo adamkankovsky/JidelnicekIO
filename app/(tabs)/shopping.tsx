@@ -1,14 +1,33 @@
+import React, { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ShoppingCategory } from '@/components/ShoppingCategory';
+import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
+import { ALL_SHOPS, PROMO_PERIODS } from '@/data/deals';
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { downloadTextFile } from '@/utils/downloadFile';
 import { buildShoppingListCsv } from '@/utils/exportIngredients';
 
+function computeEstimatedTotal(): number {
+  let total = 0;
+  for (const cat of INGREDIENT_CATEGORIES) {
+    for (const item of cat.items) {
+      total += item.shop1 ?? item.shop2 ?? 0;
+    }
+  }
+  return total;
+}
+
+const ESTIMATED_TOTAL = computeEstimatedTotal();
+
 export default function ShoppingScreen() {
   const { isLoading, totalCount, checkedCount, clearAllChecked, hidePurchased, setHidePurchased } = useShopping();
+  const { totalSpent } = usePurchases();
+
+  const [shopFilter, setShopFilter] = useState<string | null>(null);
+  const [periodFilter, setPeriodFilter] = useState<{ from: string; to: string } | null>(null);
 
   const progress = totalCount > 0 ? checkedCount / totalCount : 0;
   const remaining = totalCount - checkedCount;
@@ -18,6 +37,16 @@ export default function ShoppingScreen() {
     if (!ok) {
       Alert.alert('Export', 'Stažení souboru je dostupné ve webové verzi aplikace.');
     }
+  };
+
+  const toggleShop = (shop: string) => {
+    setShopFilter((prev) => (prev === shop ? null : shop));
+  };
+
+  const togglePeriod = (period: { from: string; to: string }) => {
+    setPeriodFilter((prev) =>
+      prev?.from === period.from && prev?.to === period.to ? null : period,
+    );
   };
 
   if (isLoading) {
@@ -36,6 +65,7 @@ export default function ShoppingScreen() {
           Klepněte na položku pro označení jako nakoupené. Stav se uloží i po zavření aplikace.
         </Text>
 
+        {/* Progress + actions */}
         <View className="mb-5 rounded-2xl border border-camp-accent bg-white p-4">
           <View className="mb-2 flex-row items-end justify-between">
             <View>
@@ -45,7 +75,22 @@ export default function ShoppingScreen() {
                 <Text className="text-lg font-semibold text-camp-muted"> / {totalCount}</Text>
               </Text>
             </View>
-            <Text className="text-sm font-medium text-camp-secondary">Zbývá {remaining}</Text>
+            <View className="items-end">
+              <Text className="text-sm font-medium text-camp-secondary">Zbývá {remaining}</Text>
+            </View>
+          </View>
+
+          <View className="mt-3 flex-row justify-between rounded-xl bg-camp-accent/50 px-3 py-2">
+            <View>
+              <Text className="text-[10px] text-camp-muted">Odhad nákupu</Text>
+              <Text className="text-base font-bold text-camp-text">{ESTIMATED_TOTAL.toLocaleString('cs-CZ')} Kč</Text>
+            </View>
+            <View className="items-end">
+              <Text className="text-[10px] text-camp-muted">Skutečně utraceno</Text>
+              <Text className={`text-base font-bold ${totalSpent > 0 ? 'text-camp-warm' : 'text-camp-muted'}`}>
+                {totalSpent > 0 ? `${Math.round(totalSpent).toLocaleString('cs-CZ')} Kč` : '—'}
+              </Text>
+            </View>
           </View>
 
           <View className="h-3 overflow-hidden rounded-full bg-camp-accent">
@@ -80,8 +125,68 @@ export default function ShoppingScreen() {
           </Pressable>
         </View>
 
+        {/* Filters */}
+        <View className="mb-5 rounded-2xl border border-camp-accent bg-white p-4">
+          <Text className="mb-2 text-sm font-bold text-camp-text">Filtrovat podle obchodu</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
+            <View className="flex-row gap-2">
+              {ALL_SHOPS.map((shop) => (
+                <Pressable
+                  key={shop}
+                  onPress={() => toggleShop(shop)}
+                  className={`rounded-lg border px-3 py-1.5 ${
+                    shopFilter === shop
+                      ? 'border-camp-primary bg-camp-primary'
+                      : 'border-camp-accent bg-white'
+                  }`}>
+                  <Text
+                    className={`text-sm ${
+                      shopFilter === shop ? 'font-semibold text-white' : 'text-camp-text'
+                    }`}>
+                    {shop}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </ScrollView>
+
+          <Text className="mb-2 text-sm font-bold text-camp-text">Filtrovat podle akčního období</Text>
+          <View className="flex-row flex-wrap gap-2">
+            {PROMO_PERIODS.map((p) => {
+              const active = periodFilter?.from === p.from && periodFilter?.to === p.to;
+              return (
+                <Pressable
+                  key={p.label}
+                  onPress={() => togglePeriod(p)}
+                  className={`rounded-lg border px-3 py-1.5 ${
+                    active ? 'border-camp-primary bg-camp-primary' : 'border-camp-accent bg-white'
+                  }`}>
+                  <Text className={`text-sm ${active ? 'font-semibold text-white' : 'text-camp-text'}`}>
+                    {p.label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+
+          {(shopFilter || periodFilter) ? (
+            <Pressable
+              onPress={() => { setShopFilter(null); setPeriodFilter(null); }}
+              className="mt-3 items-center rounded-lg bg-camp-accent py-2">
+              <Text className="text-sm font-semibold text-camp-primary">Zrušit filtry</Text>
+            </Pressable>
+          ) : null}
+        </View>
+
+        {/* Shopping list */}
         {INGREDIENT_CATEGORIES.map((category) => (
-          <ShoppingCategory key={category.category} category={category} hidePurchased={hidePurchased} />
+          <ShoppingCategory
+            key={category.category}
+            category={category}
+            hidePurchased={hidePurchased}
+            shopFilter={shopFilter}
+            periodFilter={periodFilter}
+          />
         ))}
 
         {hidePurchased && checkedCount === totalCount ? (

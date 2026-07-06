@@ -43,6 +43,16 @@ export interface IngredientOverride {
 
 export type OverridesMap = Record<string, IngredientOverride>;
 
+export interface DealOffer {
+  shop: string;
+  validFrom: string;
+  validTo: string;
+  product: string;
+  packaging: string;
+  price: string;
+  note: string;
+}
+
 export interface ShoppingItem {
   name: string;
   quantity: string;
@@ -50,12 +60,20 @@ export interface ShoppingItem {
   shop1: number | null;
   shop2: number | null;
   pricePerUnit: string | null;
+  deals?: DealOffer[];
 }
 
 export interface IngredientCategory {
   category: string;
   items: ShoppingItem[];
 }
+
+export interface ActualPurchase {
+  price: number | null;
+  shop: string;
+}
+
+export type ActualPurchasesMap = Record<string, ActualPurchase>;
 
 export const MEAL_TYPE_LABELS: Record<MealType, string> = {
   snidane: 'Snídaně',

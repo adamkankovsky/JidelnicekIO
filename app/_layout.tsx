@@ -7,6 +7,7 @@ import '../global.css';
 
 import { useColorScheme } from '@/components/useColorScheme';
 import { DinersProvider } from '@/context/DinersContext';
+import { PurchaseProvider } from '@/context/PurchaseContext';
 import { ShoppingProvider } from '@/context/ShoppingContext';
 
 export {
@@ -53,7 +54,9 @@ export default function RootLayout() {
   return (
     <DinersProvider>
       <ShoppingProvider>
-        <RootLayoutNav />
+        <PurchaseProvider>
+          <RootLayoutNav />
+        </PurchaseProvider>
       </ShoppingProvider>
     </DinersProvider>
   );
