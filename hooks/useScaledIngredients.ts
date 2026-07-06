@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 
 import { useDiners } from '@/context/DinersContext';
-import type { CampDay, Ingredient, Meal } from '@/data/types';
+import type { CampDay, DinersConfig, Ingredient, Meal } from '@/data/types';
+import { getMealDiners } from '@/data/types';
 import { formatQuantity, getIngredientKey, getScaleFactor, scaleIngredient } from '@/utils/scaling';
 
 export interface ScaledIngredient {
@@ -17,8 +18,13 @@ export interface ScaledIngredient {
 }
 
 export function useScaledMeal(day: CampDay, meal: Meal): ScaledIngredient[] {
-  const { diners, getOverride } = useDiners();
-  const factor = getScaleFactor(day.baseDiners, diners);
+  const { coefficient, getMealDiners: getMealDinersOverride, getOverride } = useDiners();
+
+  const baseDiners = getMealDiners(meal, day);
+  const dinersOverride = getMealDinersOverride(meal.id);
+  const effectiveDiners: DinersConfig = dinersOverride ?? baseDiners;
+
+  const factor = getScaleFactor(baseDiners, effectiveDiners) * coefficient;
 
   return useMemo(() => {
     if (meal.ingredients.length === 0 && meal.ingredientsRaw) {
@@ -74,5 +80,5 @@ export function useScaledMeal(day: CampDay, meal: Meal): ScaledIngredient[] {
         original: ingredient,
       };
     });
-  }, [day.baseDiners, diners, factor, getOverride, meal]);
+  }, [factor, getOverride, meal]);
 }

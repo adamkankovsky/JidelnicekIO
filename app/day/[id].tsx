@@ -2,10 +2,10 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { DinersSummary } from '@/components/DinersSummary';
 import { MealSection } from '@/components/MealSection';
+import { useDiners } from '@/context/DinersContext';
 import { MEAL_PLAN } from '@/data/mealPlan';
-import { formatDiners } from '@/data/types';
+import { formatDiners, getMealDiners, getTotalDiners } from '@/data/types';
 
 export function generateStaticParams() {
   return MEAL_PLAN.map((day) => ({ id: day.id }));
@@ -13,6 +13,7 @@ export function generateStaticParams() {
 
 export default function DayDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const { coefficient } = useDiners();
   const day = MEAL_PLAN.find((d) => d.id === id);
 
   if (!day) {
@@ -22,6 +23,8 @@ export default function DayDetailScreen() {
       </View>
     );
   }
+
+  const primaryDiners = getMealDiners(day.meals.find((m) => m.label) ?? day.meals[0], day);
 
   return (
     <>
@@ -37,16 +40,13 @@ export default function DayDetailScreen() {
             {day.date} {day.dayName}
           </Text>
           <Text className="mt-1 text-sm text-camp-accent">
-            Základní počet: {formatDiners(day.baseDiners)}
+            {formatDiners(primaryDiners)} · {getTotalDiners(primaryDiners)} osob
+            {coefficient !== 1.0 ? ` · koef. ${coefficient}×` : ''}
           </Text>
         </View>
 
-        <View className="mb-5">
-          <DinersSummary compact />
-        </View>
-
         <Text className="mb-3 text-sm text-camp-muted">
-          Klepněte na ingredienci pro úpravu množství. Dlouhé stisknutí nebo „reset“ vrátí přepočítanou hodnotu.
+          Klepněte na strávníky nebo ingredienci pro úpravu. Dlouhé stisknutí vrátí původní hodnotu.
         </Text>
 
         {day.meals.map((meal) => (

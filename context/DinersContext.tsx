@@ -3,18 +3,22 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 
 import type { DinersConfig, IngredientOverride, OverridesMap } from '@/data/types';
 
-const DINERS_KEY = '@jidelnicek/diners';
+const COEFFICIENT_KEY = '@jidelnicek/coefficient';
 const OVERRIDES_KEY = '@jidelnicek/overrides';
+const MEAL_DINERS_KEY = '@jidelnicek/mealDiners';
 
-const DEFAULT_DINERS: DinersConfig = { children: 18, adults: 12 };
+const DEFAULT_COEFFICIENT = 1.0;
+
+export type MealDinersOverrides = Record<string, DinersConfig>;
 
 interface DinersContextValue {
-  diners: DinersConfig;
+  coefficient: number;
+  mealDinersOverrides: MealDinersOverrides;
   overrides: OverridesMap;
   isLoading: boolean;
-  setDiners: (config: DinersConfig) => void;
-  setChildren: (count: number) => void;
-  setAdults: (count: number) => void;
+  setCoefficient: (value: number) => void;
+  setMealDiners: (mealId: string, config: DinersConfig | null) => void;
+  getMealDiners: (mealId: string) => DinersConfig | undefined;
   setOverride: (key: string, override: IngredientOverride | null) => void;
   clearOverridesForMeal: (mealId: string) => void;
   clearAllOverrides: () => void;
@@ -24,23 +28,31 @@ interface DinersContextValue {
 const DinersContext = createContext<DinersContextValue | null>(null);
 
 export function DinersProvider({ children }: { children: React.ReactNode }) {
-  const [diners, setDinersState] = useState<DinersConfig>(DEFAULT_DINERS);
+  const [coefficient, setCoefficientState] = useState<number>(DEFAULT_COEFFICIENT);
+  const [mealDinersOverrides, setMealDinersState] = useState<MealDinersOverrides>({});
   const [overrides, setOverridesState] = useState<OverridesMap>({});
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const [storedDiners, storedOverrides] = await Promise.all([
-          AsyncStorage.getItem(DINERS_KEY),
+        const [storedCoefficient, storedOverrides, storedMealDiners] = await Promise.all([
+          AsyncStorage.getItem(COEFFICIENT_KEY),
           AsyncStorage.getItem(OVERRIDES_KEY),
+          AsyncStorage.getItem(MEAL_DINERS_KEY),
         ]);
 
-        if (storedDiners) {
-          setDinersState(JSON.parse(storedDiners) as DinersConfig);
+        if (storedCoefficient) {
+          const parsed = parseFloat(storedCoefficient);
+          if (!Number.isNaN(parsed) && parsed > 0) {
+            setCoefficientState(parsed);
+          }
         }
         if (storedOverrides) {
           setOverridesState(JSON.parse(storedOverrides) as OverridesMap);
+        }
+        if (storedMealDiners) {
+          setMealDinersState(JSON.parse(storedMealDiners) as MealDinersOverrides);
         }
       } catch (error) {
         console.warn('Failed to load settings', error);
@@ -52,12 +64,22 @@ export function DinersProvider({ children }: { children: React.ReactNode }) {
     load();
   }, []);
 
-  const persistDiners = useCallback(async (config: DinersConfig) => {
-    setDinersState(config);
+  const setCoefficient = useCallback(async (value: number) => {
+    const clamped = Math.max(0.1, Math.round(value * 100) / 100);
+    setCoefficientState(clamped);
     try {
-      await AsyncStorage.setItem(DINERS_KEY, JSON.stringify(config));
+      await AsyncStorage.setItem(COEFFICIENT_KEY, String(clamped));
     } catch (error) {
-      console.warn('Failed to persist diners', error);
+      console.warn('Failed to persist coefficient', error);
+    }
+  }, []);
+
+  const persistMealDiners = useCallback(async (next: MealDinersOverrides) => {
+    setMealDinersState(next);
+    try {
+      await AsyncStorage.setItem(MEAL_DINERS_KEY, JSON.stringify(next));
+    } catch (error) {
+      console.warn('Failed to persist meal diners', error);
     }
   }, []);
 
@@ -70,34 +92,25 @@ export function DinersProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const setDiners = useCallback(
-    (config: DinersConfig) => {
-      persistDiners({
-        children: Math.max(0, Math.round(config.children)),
-        adults: Math.max(0, Math.round(config.adults)),
-      });
+  const setMealDiners = useCallback(
+    (mealId: string, config: DinersConfig | null) => {
+      const next = { ...mealDinersOverrides };
+      if (config === null) {
+        delete next[mealId];
+      } else {
+        next[mealId] = {
+          children: Math.max(0, Math.round(config.children)),
+          adults: Math.max(0, Math.round(config.adults)),
+        };
+      }
+      persistMealDiners(next);
     },
-    [persistDiners],
+    [mealDinersOverrides, persistMealDiners],
   );
 
-  const setChildren = useCallback(
-    (count: number) => {
-      persistDiners({
-        children: Math.max(0, Math.round(count)),
-        adults: diners.adults,
-      });
-    },
-    [diners.adults, persistDiners],
-  );
-
-  const setAdults = useCallback(
-    (count: number) => {
-      persistDiners({
-        children: diners.children,
-        adults: Math.max(0, Math.round(count)),
-      });
-    },
-    [diners.children, persistDiners],
+  const getMealDiners = useCallback(
+    (mealId: string) => mealDinersOverrides[mealId],
+    [mealDinersOverrides],
   );
 
   const setOverride = useCallback(
@@ -128,30 +141,33 @@ export function DinersProvider({ children }: { children: React.ReactNode }) {
 
   const clearAllOverrides = useCallback(() => {
     persistOverrides({});
-  }, [persistOverrides]);
+    persistMealDiners({});
+  }, [persistOverrides, persistMealDiners]);
 
   const getOverride = useCallback((key: string) => overrides[key], [overrides]);
 
   const value = useMemo(
     () => ({
-      diners,
+      coefficient,
+      mealDinersOverrides,
       overrides,
       isLoading,
-      setDiners,
-      setChildren,
-      setAdults,
+      setCoefficient,
+      setMealDiners,
+      getMealDiners,
       setOverride,
       clearOverridesForMeal,
       clearAllOverrides,
       getOverride,
     }),
     [
-      diners,
+      coefficient,
+      mealDinersOverrides,
       overrides,
       isLoading,
-      setDiners,
-      setChildren,
-      setAdults,
+      setCoefficient,
+      setMealDiners,
+      getMealDiners,
       setOverride,
       clearOverridesForMeal,
       clearAllOverrides,
