@@ -5,7 +5,7 @@ import type { DealOffer, ShoppingItem } from '@/data/types';
 import { DEAL_OFFERS, ALL_SHOPS } from '@/data/deals';
 import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
-import { formatShoppingQuantity, getBestDeal, getEffectiveUnitPrice, getPurchaseLineTotal, getShoppingItemKey, isUsingDealPrice, parseShoppingQuantity } from '@/utils/shopping';
+import { formatShoppingQuantity, getBestDeal, getEffectiveUnitPrice, getPackageCount, getPackageLabel, getPurchaseLineTotal, getShoppingItemKey, isUsingDealPrice, parseShoppingMeasure } from '@/utils/shopping';
 
 interface ShoppingItemRowProps {
   category: string;
@@ -34,11 +34,13 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
   const quantity = formatShoppingQuantity(item);
   const deals = DEAL_OFFERS[key] ?? [];
   const purchase = getPurchase(key);
+  const bestDeal = getBestDeal(deals);
   const lineTotal = getPurchaseLineTotal(item, purchase, deals);
   const unitPrice = getEffectiveUnitPrice(purchase, deals);
-  const itemQty = parseShoppingQuantity(item.quantity);
+  const needed = parseShoppingMeasure(item);
+  const packageCount = purchase?.price != null ? needed.amount : getPackageCount(item, bestDeal);
+  const priceUnitLabel = purchase?.price != null ? item.unit : getPackageLabel(bestDeal);
   const fromDeal = isUsingDealPrice(purchase, deals);
-  const bestDeal = getBestDeal(deals);
   const displayShop = purchase?.shop || bestDeal?.shop || '';
 
   const [editVisible, setEditVisible] = useState(false);
@@ -114,7 +116,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
               {purchased && lineTotal != null
                 ? `${Math.round(lineTotal)} Kč`
                 : unitPrice != null
-                  ? `~${Math.round(unitPrice * itemQty)} Kč`
+                  ? `~${Math.round(lineTotal ?? unitPrice * packageCount)} Kč`
                   : '+ Cena'}
             </Text>
           </Pressable>
@@ -147,7 +149,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
             <Text className="text-xs font-semibold text-camp-primary">
               Koupeno{fromDeal ? ' (leták)' : ''}:{' '}
               {unitPrice != null
-                ? `${unitPrice} Kč/${item.unit} × ${itemQty} = ${Math.round(lineTotal)} Kč`
+                ? `${unitPrice} Kč/${priceUnitLabel} × ${packageCount} = ${Math.round(lineTotal)} Kč`
                 : '—'}
             </Text>
             {displayShop ? (
@@ -167,8 +169,10 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
               Cena za jednotku ({item.unit}) v Kč
             </Text>
             <Text className="mb-2 text-xs text-camp-muted">
-              Množství: {quantity} → celkem {itemQty} × cena
-              {fromDeal && unitPrice != null ? ` (leták ${unitPrice} Kč)` : ''}
+              Potřeba: {quantity}
+              {fromDeal && bestDeal
+                ? ` → ${packageCount} ${getPackageLabel(bestDeal)} × ${unitPrice ?? '?'} Kč`
+                : ` → ${packageCount} × cena`}
             </Text>
             <TextInput
               value={editPrice}
