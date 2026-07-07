@@ -11,7 +11,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import type { ActualPurchase, DinersConfig, IngredientOverride } from '@/data/types';
-import { getShoppingItemKey } from '@/utils/shopping';
+import { getShoppingItemKey, parseShoppingQuantity } from '@/utils/shopping';
 import {
   createDefaultState,
   exportStateJson,
@@ -328,10 +328,19 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     [state.shopping.checked],
   );
 
-  const totalSpent = useMemo(
-    () => Object.values(state.purchases).reduce((sum, p) => sum + (p.price ?? 0), 0),
-    [state.purchases],
-  );
+  const totalSpent = useMemo(() => {
+    let sum = 0;
+    for (const category of INGREDIENT_CATEGORIES) {
+      for (const item of category.items) {
+        const key = getShoppingItemKey(category.category, item);
+        const purchase = state.purchases[key];
+        if (purchase?.price != null) {
+          sum += purchase.price * parseShoppingQuantity(item.quantity);
+        }
+      }
+    }
+    return sum;
+  }, [state.purchases]);
 
   const value = useMemo(
     () => ({

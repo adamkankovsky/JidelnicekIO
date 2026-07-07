@@ -5,7 +5,7 @@ import type { DealOffer, ShoppingItem } from '@/data/types';
 import { DEAL_OFFERS, ALL_SHOPS } from '@/data/deals';
 import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
-import { formatShoppingQuantity, getShoppingItemKey } from '@/utils/shopping';
+import { formatShoppingQuantity, getPurchaseLineTotal, getShoppingItemKey, parseShoppingQuantity } from '@/utils/shopping';
 
 interface ShoppingItemRowProps {
   category: string;
@@ -34,6 +34,8 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
   const quantity = formatShoppingQuantity(item);
   const deals = DEAL_OFFERS[key] ?? [];
   const purchase = getPurchase(key);
+  const lineTotal = getPurchaseLineTotal(item, purchase);
+  const itemQty = parseShoppingQuantity(item.quantity);
 
   const [editVisible, setEditVisible] = useState(false);
   const [editPrice, setEditPrice] = useState('');
@@ -105,7 +107,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
             hitSlop={8}
             className="ml-2 rounded-lg border border-camp-accent px-2.5 py-1.5 active:bg-camp-accent/40">
             <Text className="text-xs text-camp-primary">
-              {purchase?.price != null ? `${purchase.price} Kč` : '+ Cena'}
+              {lineTotal != null ? `${Math.round(lineTotal)} Kč` : '+ Cena'}
             </Text>
           </Pressable>
         </View>
@@ -133,12 +135,15 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
 
         {/* Actual purchase info */}
         {purchase ? (
-          <View className="ml-9 mt-1 flex-row items-center">
+          <View className="ml-9 mt-1">
             <Text className="text-xs font-semibold text-camp-primary">
-              Koupeno: {purchase.price != null ? `${purchase.price} Kč` : '—'}
+              Koupeno:{' '}
+              {purchase.price != null
+                ? `${purchase.price} Kč/${item.unit} × ${itemQty} = ${Math.round(lineTotal ?? 0)} Kč`
+                : '—'}
             </Text>
             {purchase.shop ? (
-              <Text className="ml-2 text-xs text-camp-muted">v {purchase.shop}</Text>
+              <Text className="mt-0.5 text-xs text-camp-muted">v {purchase.shop}</Text>
             ) : null}
           </View>
         ) : null}
@@ -150,11 +155,16 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
           <Pressable className="w-80 rounded-2xl bg-white p-5" onPress={(e) => e.stopPropagation()}>
             <Text className="mb-4 text-center text-lg font-bold text-camp-text">{item.name}</Text>
 
-            <Text className="mb-1 text-sm text-camp-muted">Skutečná cena (celkem Kč)</Text>
+            <Text className="mb-1 text-sm text-camp-muted">
+              Cena za jednotku ({item.unit}) v Kč
+            </Text>
+            <Text className="mb-2 text-xs text-camp-muted">
+              Množství: {quantity} → celkem {itemQty} × cena
+            </Text>
             <TextInput
               value={editPrice}
               onChangeText={setEditPrice}
-              placeholder="např. 149"
+              placeholder={`např. ${filteredDeals[0]?.price.replace(/[^\d,.]/g, '') || '9,90'}`}
               keyboardType="decimal-pad"
               className="mb-4 rounded-xl border border-camp-accent px-4 py-3 text-base text-camp-text"
             />

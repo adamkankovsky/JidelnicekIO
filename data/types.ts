@@ -69,6 +69,7 @@ export interface IngredientCategory {
 }
 
 export interface ActualPurchase {
+  /** Price per unit (ks, kg, l, …) */
   price: number | null;
   shop: string;
 }
