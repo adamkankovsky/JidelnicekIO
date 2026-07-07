@@ -10,8 +10,9 @@ import React, {
 import { ActivityIndicator, Text, View } from 'react-native';
 
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
+import { DEAL_OFFERS } from '@/data/deals';
 import type { ActualPurchase, DinersConfig, IngredientOverride } from '@/data/types';
-import { getShoppingItemKey, parseShoppingQuantity } from '@/utils/shopping';
+import { getPurchaseLineTotal, getShoppingItemKey } from '@/utils/shopping';
 import {
   createDefaultState,
   exportStateJson,
@@ -333,14 +334,16 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     for (const category of INGREDIENT_CATEGORIES) {
       for (const item of category.items) {
         const key = getShoppingItemKey(category.category, item);
+        if (!state.shopping.checked[key]) continue;
+
         const purchase = state.purchases[key];
-        if (purchase?.price != null) {
-          sum += purchase.price * parseShoppingQuantity(item.quantity);
-        }
+        const deals = DEAL_OFFERS[key] ?? [];
+        const lineTotal = getPurchaseLineTotal(item, purchase, deals);
+        if (lineTotal != null) sum += lineTotal;
       }
     }
     return sum;
-  }, [state.purchases]);
+  }, [state.purchases, state.shopping.checked]);
 
   const value = useMemo(
     () => ({

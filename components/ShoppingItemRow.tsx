@@ -5,7 +5,7 @@ import type { DealOffer, ShoppingItem } from '@/data/types';
 import { DEAL_OFFERS, ALL_SHOPS } from '@/data/deals';
 import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
-import { formatShoppingQuantity, getPurchaseLineTotal, getShoppingItemKey, parseShoppingQuantity } from '@/utils/shopping';
+import { formatShoppingQuantity, getBestDeal, getEffectiveUnitPrice, getPurchaseLineTotal, getShoppingItemKey, isUsingDealPrice, parseShoppingQuantity } from '@/utils/shopping';
 
 interface ShoppingItemRowProps {
   category: string;
@@ -34,8 +34,12 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
   const quantity = formatShoppingQuantity(item);
   const deals = DEAL_OFFERS[key] ?? [];
   const purchase = getPurchase(key);
-  const lineTotal = getPurchaseLineTotal(item, purchase);
+  const lineTotal = getPurchaseLineTotal(item, purchase, deals);
+  const unitPrice = getEffectiveUnitPrice(purchase, deals);
   const itemQty = parseShoppingQuantity(item.quantity);
+  const fromDeal = isUsingDealPrice(purchase, deals);
+  const bestDeal = getBestDeal(deals);
+  const displayShop = purchase?.shop || bestDeal?.shop || '';
 
   const [editVisible, setEditVisible] = useState(false);
   const [editPrice, setEditPrice] = useState('');
@@ -49,7 +53,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
 
   const openEdit = () => {
     setEditPrice(purchase?.price != null ? String(purchase.price) : '');
-    setEditShop(purchase?.shop ?? '');
+    setEditShop(purchase?.shop ?? bestDeal?.shop ?? '');
     setEditVisible(true);
   };
 
@@ -107,7 +111,11 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
             hitSlop={8}
             className="ml-2 rounded-lg border border-camp-accent px-2.5 py-1.5 active:bg-camp-accent/40">
             <Text className="text-xs text-camp-primary">
-              {lineTotal != null ? `${Math.round(lineTotal)} Kč` : '+ Cena'}
+              {purchased && lineTotal != null
+                ? `${Math.round(lineTotal)} Kč`
+                : unitPrice != null
+                  ? `~${Math.round(unitPrice * itemQty)} Kč`
+                  : '+ Cena'}
             </Text>
           </Pressable>
         </View>
@@ -134,16 +142,16 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
         ) : null}
 
         {/* Actual purchase info */}
-        {purchase ? (
+        {(purchased || purchase) && lineTotal != null ? (
           <View className="ml-9 mt-1">
             <Text className="text-xs font-semibold text-camp-primary">
-              Koupeno:{' '}
-              {purchase.price != null
-                ? `${purchase.price} Kč/${item.unit} × ${itemQty} = ${Math.round(lineTotal ?? 0)} Kč`
+              Koupeno{fromDeal ? ' (leták)' : ''}:{' '}
+              {unitPrice != null
+                ? `${unitPrice} Kč/${item.unit} × ${itemQty} = ${Math.round(lineTotal)} Kč`
                 : '—'}
             </Text>
-            {purchase.shop ? (
-              <Text className="mt-0.5 text-xs text-camp-muted">v {purchase.shop}</Text>
+            {displayShop ? (
+              <Text className="mt-0.5 text-xs text-camp-muted">v {displayShop}</Text>
             ) : null}
           </View>
         ) : null}
@@ -160,6 +168,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
             </Text>
             <Text className="mb-2 text-xs text-camp-muted">
               Množství: {quantity} → celkem {itemQty} × cena
+              {fromDeal && unitPrice != null ? ` (leták ${unitPrice} Kč)` : ''}
             </Text>
             <TextInput
               value={editPrice}
