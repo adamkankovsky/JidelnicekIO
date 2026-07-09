@@ -1,207 +1,273 @@
 import type { DealOffer } from './types';
 
 /**
- * Promo deal offers parsed from nejlepsi_moznosti_nakup_s_datumy.xlsx.
+ * Auto-generated from Potravinka.cz API on 2026-07-09.
+ * Stores: Albert, Penny, Kaufland, LIDL, Tesco
  * Key = "CATEGORY::ItemName"
  */
 export const DEAL_OFFERS: Record<string, DealOffer[]> = {
-  "ZELENINA::Okurka": [
-    { shop: "Albert", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Okurka salátová hadovka", packaging: "1 ks", price: "9,90 Kč", note: "Nejlepší nalezená cena za salátovou okurku." },
-  ],
-  "ZELENINA::Cibule": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Cibule kuchyňská žlutá volná", packaging: "1 kg", price: "14,90 Kč", note: "Nejlepší nalezená cena za kg." },
-  ],
-  "ZELENINA::Česnek": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Česnek balený XXL", packaging: "500 g", price: "39,90 Kč", note: "Měrně cca 79,80 Kč/kg." },
-  ],
-  "ZELENINA::Mrkev": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Mrkev volná", packaging: "1 kg", price: "19,90 Kč", note: "Stejná nejlepší cena ve více letácích." },
-    { shop: "Tesco", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Mrkev", packaging: "1 kg", price: "19,90 Kč", note: "Stejná nejlepší cena ve více letácích." },
-  ],
-  "ZELENINA::Brambory": [
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Brambory žluté rané", packaging: "1 kg", price: "12,90 Kč", note: "Nejlepší cena za kg." },
-    { shop: "Lidl", validFrom: "2026-07-09", validTo: "2026-07-12", product: "Brambory rané", packaging: "1 kg", price: "12,90 Kč", note: "Nejlepší cena za kg." },
-  ],
-  "OVOCE::Jablko": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Jablka červená volná", packaging: "1 kg", price: "22,90 Kč", note: "Nejlepší cena za kg." },
-  ],
-  "SUCHÉ::Knedlík": [
-    { shop: "Tesco", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Tesco Houskový knedlík", packaging: "400 g", price: "27,90 Kč", note: "Nejlevnější nalezený knedlík." },
-  ],
-  "SUCHÉ::Cukr": [
-    { shop: "Tesco", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Korunní cukr krystal", packaging: "1 kg", price: "9,90 Kč", note: "Nejlepší cena; další běžná akce 12,90 Kč." },
-  ],
-  "SUCHÉ::Sůl": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Mořská sůl San Fabio", packaging: "1 kg", price: "11,90 Kč", note: "Nejlevnější sůl v letácích." },
-  ],
-  "SUCHÉ::Polohrubá mouka": [
-    { shop: "Albert", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Albert Mouka vybrané druhy", packaging: "1 kg", price: "9,90 Kč", note: "Albert je levnější, ale ověř typ v regálu." },
-    { shop: "Lidl", validFrom: "2026-07-06", validTo: "2026-07-08", product: "Babiččina volba polohrubá", packaging: "1 kg", price: "19,90 Kč", note: "Jistá polohrubá." },
-  ],
-  "SUCHÉ::Lupinky": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Cereálie Cornflakes Crip Crop", packaging: "500 g", price: "29,90 Kč", note: "Nejlepší nalezené lupínky/cornflakes." },
-  ],
-  "SUCHÉ::Arašidy": [
-    { shop: "Kaufland", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Arašídy pražené solené", packaging: "500 g", price: "39,90 Kč", note: "Cca 79,80 Kč/kg." },
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Arašídy pražené solené", packaging: "500 g", price: "39,90 Kč", note: "Cca 79,80 Kč/kg." },
-  ],
-  "SUCHÉ::Tortilly": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Pšeničná/celozrnná tortilla Mexilla", packaging: "6×60 g", price: "23,90 Kč", note: "Penny má jasně uvedené kusy." },
-  ],
-  "SUCHÉ::Chleba": [
-    { shop: "Albert", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Chléb Pětistovka", packaging: "500 g", price: "21,90 Kč", note: "Nejlepší klasický chléb." },
-  ],
-  "SUCHÉ::Strouhanka": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Strouhanka z pečiva Karlova Koruna", packaging: "500 g", price: "19,90 Kč", note: "Cca 39,80 Kč/kg." },
-  ],
-  "SUCHÉ::Hladká mouka": [
-    { shop: "Albert", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Albert Mouka vybrané druhy", packaging: "1 kg", price: "9,90 Kč", note: "Ověř typ v regálu." },
-    { shop: "Lidl", validFrom: "2026-07-06", validTo: "2026-07-08", product: "Babiččina volba hladká", packaging: "1 kg", price: "19,90 Kč", note: "Jistá hladká." },
-  ],
-  "MASO::Vepřové mleté": [
-    { shop: "Lidl", validFrom: "2026-07-06", validTo: "2026-07-08", product: "Vepřové mleté maso", packaging: "1 kg", price: "99,90 Kč", note: "Nejlepší nalezené mleté maso." },
-  ],
-  "MASO::Plec": [
-    { shop: "Tesco", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Vepřová plec bez kosti", packaging: "1 kg", price: "54,90 Kč", note: "Nejlepší nalezená cena." },
-  ],
-  "MASO::Vysočina": [
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Krahulík Vysočina", packaging: "800 g", price: "99,90 Kč", note: "Cca 124,90 Kč/kg." },
-  ],
-  "MASO::Kuřecí prsa": [
-    { shop: "Albert", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Kuřecí prsní řízky", packaging: "1 kg", price: "109,90 Kč", note: "Stejná nejlepší jistá cena." },
-    { shop: "Lidl", validFrom: "2026-07-09", validTo: "2026-07-12", product: "Kuřecí prsní řízky", packaging: "1 kg", price: "109,90 Kč", note: "Stejná nejlepší jistá cena." },
-  ],
-  "MASO::Špekáčky": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Špekáčky tradiční", packaging: "400 g", price: "39,90 Kč", note: "Cca 99,80 Kč/kg." },
-  ],
-  "MASO::Šunkový salám": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Šunkový salám Řezníkův talíř", packaging: "350 g", price: "42,90 Kč", note: "Cca 122,60 Kč/kg." },
-  ],
-  "POLOTOVARY::Čaj Jemča Flip": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Jemča bylinné čaje", packaging: "30 g", price: "18,90 Kč", note: "Přesně Jemča Flip nenalezen; jako levnější čaj je Pigi 8,90 Kč." },
-  ],
-  "POLOTOVARY::Ocet": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Ocet lihový Gustito 8 %", packaging: "1 l", price: "10,90 Kč", note: "Nejlepší nalezený lihový ocet." },
-  ],
-  "POLOTOVARY::Hořčice plnotučná": [
-    { shop: "Lidl", validFrom: "2026-07-09", validTo: "2026-07-12", product: "Fruta Bohemia plnotučná", packaging: "920 g", price: "23,90 Kč", note: "Nejlepší měrně." },
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Karlova Koruna plnotučná", packaging: "350 g", price: "14,90 Kč", note: "Menší běžné balení." },
-  ],
-  "POLOTOVARY::Hořčice kremžská": [
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Hořčice plnotučná/kremžská", packaging: "340 g", price: "14,90 Kč", note: "Nejlepší nalezená varianta." },
-  ],
-  "POLOTOVARY::Kečup": [
-    { shop: "Kaufland", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Benita kečup jemný/ostrý", packaging: "1 kg", price: "24,90 Kč", note: "Nejlepší nalezený kečup." },
-  ],
-  "POLOTOVARY::Sojovka": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Omáčka Vitana sójová/worcesterová", packaging: "160 ml", price: "29,90 Kč", note: "Nejbližší shoda na sójovou omáčku." },
-  ],
-  "MLÉČNÉ / VEJCE::Smetana 12%": [
-    { shop: "Albert", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Kunín zakysaná smetana 12 %", packaging: "190 g", price: "19,90 Kč", note: "Pozor: je to zakysaná smetana." },
-  ],
-  "MLÉČNÉ / VEJCE::Majonéza": [
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Zárubova Tatarka/Majonéza", packaging: "500 g", price: "39,90 Kč", note: "Dobrá velká varianta." },
-  ],
-  "MLÉČNÉ / VEJCE::Jogurty malé": [
-    { shop: "Albert", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Hollandia Selský jogurt", packaging: "200 g", price: "4,95 Kč", note: "S aplikací; bez aplikace 7,90–12,90 Kč." },
-  ],
-  "MLÉČNÉ / VEJCE::Sýr Eidam": [
-    { shop: "Tesco", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Eidam 30 %, pultový prodej", packaging: "100 g", price: "9,90 Kč", note: "Cca 99 Kč/kg." },
-  ],
-  "MLÉČNÉ / VEJCE::Tvaroh": [
-    { shop: "Tesco", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Madeta Jihočeský tvaroh", packaging: "250 g", price: "7,90 Kč", note: "Nejlepší, platí 1.–7. 7." },
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Tvaroh polotučný KK", packaging: "250 g", price: "12,90 Kč", note: "Alternativa po 7. 7." },
-  ],
-  "MLÉČNÉ / VEJCE::Pomazánkové": [
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Madeta Jihočeské pomazánkové", packaging: "150 g", price: "22,90 Kč", note: "Nejlepší nalezené pomazánkové." },
-  ],
-  "MLÉČNÉ / VEJCE::Mléko": [
-    { shop: "Lidl", validFrom: "2026-07-06", validTo: "2026-07-08", product: "Madeta polotučné mléko", packaging: "1 l", price: "6,90 Kč", note: "Nejlepší cena." },
-    { shop: "Tesco", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Polotučné mléko", packaging: "1 l", price: "8,90 Kč", note: "Alternativa po 8. 7." },
-  ],
-  "MLÉČNÉ / VEJCE::Vejce": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Čerstvá vejce z podestýlky M", packaging: "10 ks", price: "29,90 Kč", note: "2,99 Kč/ks; hlídej limit na nákup." },
-  ],
-  "STERILIZOVANÉ::Okurky": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Okurky Karlova Koruna", packaging: "670/350 g", price: "24,90 Kč", note: "Sterilované okurky." },
-  ],
-  "STERILIZOVANÉ::Protlak": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Rajčatový protlak San Fabio", packaging: "500 g", price: "17,90 Kč", note: "Nejlepší velké balení, cca 35,80 Kč/kg." },
-  ],
-  "STERILIZOVANÉ::Kukuřice": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Kukuřice sladká Penny", packaging: "3×150/140 g", price: "39,90 Kč", note: "Pro 9 ks vychází 3 multipacky." },
-  ],
-  "STERILIZOVANÉ::Hrášek": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Hrášek jemný Jardinelle", packaging: "400/280 g", price: "16,90 Kč", note: "Nejlepší konzervovaný hrášek." },
-  ],
-  "SLADKÉ::Granko": [
-    { shop: "Lidl", validFrom: "2026-07-06", validTo: "2026-07-08", product: "Granko", packaging: "500 g", price: "89,90 Kč", note: "Nejlepší měrně z nalezených variant." },
-  ],
-  "SLADKÉ::Nutella 600g": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Nutella", packaging: "350 g", price: "79,90 Kč", note: "Přesné 600g balení nenalezeno." },
-  ],
-  "SLADKÉ::Marmeláda": [
-    { shop: "Lidl", validFrom: "2026-07-09", validTo: "2026-07-12", product: "Maribel ovocný džem jahoda", packaging: "450 g", price: "29,90 Kč", note: "Nejlepší džem/marmeláda měrně." },
-  ],
-  "KOŘENÍ::Pepř": [
-    { shop: "Lidl", validFrom: "2026-07-09", validTo: "2026-07-12", product: "Kania pepř černý", packaging: "14 g", price: "5,90 Kč", note: "Nejlepší samostatný pepř." },
-  ],
-  "KOŘENÍ::Bazalka": [
-    { shop: "Kaufland", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Byliny Bazalka (květináč)", packaging: "1 ks", price: "44,90 Kč", note: "Čerstvá bylinka; sušenou nenalezeno." },
-  ],
-  "KOŘENÍ::Bobkový list": [
-    { shop: "Albert", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Vitana Koření Bobkový list", packaging: "3 g", price: "15,90 Kč", note: "Nejlepší nalezené." },
-  ],
-  "TUKY::Máslo": [
-    { shop: "Albert", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Máslo 82 %", packaging: "250 g", price: "24,90 Kč", note: "Nejlepší jistá cena." },
-  ],
-  "TUKY::Olej": [
-    { shop: "Albert", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Řepkový/slunečnicový olej", packaging: "1 l", price: "29,90 Kč", note: "Stejná nejlepší cena ve více řetězcích." },
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Řepkový/slunečnicový olej", packaging: "1 l", price: "29,90 Kč", note: "Stejná nejlepší cena ve více řetězcích." },
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Řepkový/slunečnicový olej", packaging: "1 l", price: "29,90 Kč", note: "Stejná nejlepší cena ve více řetězcích." },
-    { shop: "Tesco", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Řepkový/slunečnicový olej", packaging: "1 l", price: "29,90 Kč", note: "Stejná nejlepší cena ve více řetězcích." },
-  ],
-  "TUKY::Hovězí bujón": [
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Vitana Masox bujón 10 kostek", packaging: "110 g", price: "28,90 Kč", note: "Nejbližší bujón/Masox." },
-  ],
-  "OSTATNÍ::Paštika": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Hamé Svačinka/Májka/Matěj paštika", packaging: "105 g", price: "14,90 Kč", note: "Dobrá velikost i cena." },
-  ],
-  "OBILOVINY / LUŠTĚNINY::Fazole": [
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Fazole různé druhy", packaging: "500 g", price: "34,90 Kč", note: "Suché fazole." },
-  ],
-  "OBILOVINY / LUŠTĚNINY::Čočka": [
-    { shop: "Albert", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Čočka červená", packaging: "500 g", price: "24,90 Kč", note: "Cca 49,80 Kč/kg." },
-    { shop: "Kaufland", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Lagris čočka červená půlená", packaging: "500 g", price: "24,90 Kč", note: "Cca 49,80 Kč/kg." },
-  ],
-  "OBILOVINY / LUŠTĚNINY::Vločky": [
-    { shop: "Albert", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Emma ovesné vločky", packaging: "500 g", price: "12,90 Kč", note: "Cca 25,80 Kč/kg." },
-  ],
-  "OBILOVINY / LUŠTĚNINY::Rýže": [
-    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Lagris rýže loupaná 1 kg + 20 %", packaging: "1,2 kg", price: "34,90 Kč", note: "Cca 24,92 Kč/kg; nejlepší nalezená rýže." },
-  ],
-  "PEČIVO::Chleba": [
-    { shop: "Albert", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Chléb Pětistovka", packaging: "500 g", price: "21,90 Kč", note: "Nejlepší klasický chléb." },
-  ],
-  "PEČIVO::Rohlíky": [
-    { shop: "Kaufland", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Rohlík císařský", packaging: "85 g", price: "5,90 Kč", note: "Obyčejný rohlík za 3 Kč v letácích nenalezen." },
-  ],
-  "HYGIENA::Odpadové sáčky": [
-    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Fino pytle na odpad Zeus FLEX", packaging: "8×70 l / 12×40 l", price: "19,90 Kč", note: "Nejbližší k 60l pytlům." },
+  "HYGIENA::Alobal": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Fino Alobal 10 m x 28 cm", packaging: "1 ks", price: "49,90 Kč", note: "Běžná cena" },
   ],
   "HYGIENA::Jar": [
-    { shop: "Lidl", validFrom: "2026-07-06", validTo: "2026-07-08", product: "Jar prostředek na nádobí", packaging: "2×900 ml", price: "119,90 Kč", note: "Spolehlivější varianta." },
+    { shop: "LIDL", validFrom: "2026-07-05", validTo: "2026-07-12", product: "Jar Prostředek na nádobí", packaging: "2x900ml", price: "119,90 Kč", note: "Platí do 12.07." },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Jar Prostředek na nádobí", packaging: "2x1.35l", price: "159,90 Kč", note: "Platí do 14.07." },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Tablety do myčky Original Lemon Jar", packaging: "41ks", price: "179,90 Kč", note: "Platí do 14.07." },
+  ],
+  "HYGIENA::Odpadové sáčky": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "FINO Pytle na odpad Zeus FLEX", packaging: "8x70l/12x40l", price: "34,90 Kč", note: "Platí do 14.07." },
+  ],
+  "HYGIENA::Potravinová fólie": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Potravinová fólie 30 m x 29 cm", packaging: "1 ks", price: "17,90 Kč", note: "Běžná cena" },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "VIGO! Potravinová fólie perforovaná", packaging: "30m", price: "19,90 Kč", note: "Platí do 14.07." },
   ],
   "HYGIENA::Utěrky": [
-    { shop: "Penny", validFrom: "2026-07-01", validTo: "2026-07-07", product: "Víceúčelové utěrky Penny", packaging: "6 ks", price: "19,90 Kč", note: "Kuchyňské utěrky." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Univerzální utěrky z mikrovlákna 3 ks", packaging: "3 ks", price: "36,90 Kč", note: "Běžná cena" },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Kuchyňské utěrky Wippy", packaging: "57m", price: "39,90 Kč", note: "Platí do 14.07." },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Sanytol Dezinfekční čistič/utěrky", packaging: "500ml", price: "64,90 Kč", note: "Platí do 14.07." },
+  ],
+  "KOŘENÍ::Kmín mletý": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "J.C.Horn Kmín mletý 18g", packaging: "18g", price: "13,90 Kč", note: "Běžná cena" },
+  ],
+  "KOŘENÍ::Majoránka": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "J.C.Horn Majoránka 5g", packaging: "5g", price: "7,90 Kč", note: "Běžná cena" },
+  ],
+  "KOŘENÍ::Pepř": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Avokádo Pepř bílý mletý 18g", packaging: "18g", price: "24,90 Kč", note: "Běžná cena" },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Rybí pepřenky Gran Mare", packaging: "200/140g", price: "26,90 Kč", note: "Platí do 14.07." },
+  ],
+  "KOŘENÍ::Skořice": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Vitana Skořice mletá 23g", packaging: "23g", price: "18,50 Kč", note: "Běžná cena" },
+  ],
+  "MASO::Kuřecí prsa": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Pomalu vařená kuřecí prsa 500g", packaging: "500g", price: "114,90 Kč", note: "Běžná cena" },
+  ],
+  "MASO::Plec": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Vepřová plec s kůží", packaging: "1kg", price: "49,90 Kč", note: "Platí do 14.07." },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Vepřová plec bez kosti", packaging: "1kg", price: "59,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Vepřová plec bez kosti", packaging: "1 kg", price: "148,90 Kč", note: "Běžná cena" },
+  ],
+  "MASO::Vepřové mleté": [
+    { shop: "LIDL", validFrom: "2026-07-05", validTo: "2026-07-12", product: "Vepřové mleté maso", packaging: "1kg", price: "99,90 Kč", note: "Platí do 12.07." },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Vepřové mleté maso XXL z kýty a plece", packaging: "1kg", price: "129,90 Kč", note: "Platí do 14.07." },
+  ],
+  "MASO::Vysočina": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Salám Vysočina krájená Řezníkův talíř", packaging: "100g", price: "15,90 Kč", note: "Platí do 14.07." },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Krahulík Vysočina", packaging: "800g", price: "99,90 Kč", note: "Platí do 14.07." },
+  ],
+  "MASO::Špekáčky": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Váhala Špekáčky klasik", packaging: "100g", price: "8,90 Kč", note: "Platí do 14.07." },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Špekáčky tradiční", packaging: "400g", price: "39,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "DZ Klatovy Kuřecí špekáčky 400g", packaging: "400g", price: "44,90 Kč", note: "Běžná cena" },
+  ],
+  "MASO::Šunkový salám": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Maso Příbram Šunkový salám", packaging: "100g", price: "12,60 Kč", note: "Platí do 14.07." },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Šunkový salám Maso Příbram", packaging: "100g", price: "12,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Šunkový salám 100g", packaging: "100g", price: "18,90 Kč", note: "Běžná cena" },
+  ],
+  "MLÉČNÉ / VEJCE::Jogurty malé": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Z Valašska Jogurt bílý", packaging: "380g", price: "15,90 Kč", note: "Platí do 14.07." },
+  ],
+  "MLÉČNÉ / VEJCE::Majonéza": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Majonéza, tatarská omáčka Karlova koruna", packaging: "250ml", price: "19,90 Kč", note: "Platí do 14.07." },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Zárubova Tatarka/Majonéza", packaging: "500g", price: "34,90 Kč", note: "Platí do 14.07." },
+  ],
+  "MLÉČNÉ / VEJCE::Mléko": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Tatra/Madeta Mléko trvanlivé polotučné", packaging: "1l", price: "8,90 Kč", note: "Platí do 14.07." },
+  ],
+  "MLÉČNÉ / VEJCE::Pomazánkové": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Madeta Jihočeské pomazánkové", packaging: "150g", price: "22,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Madeta Jihočeské pomazánkové tradiční budapešť 150g", packaging: "150g", price: "39,90 Kč", note: "Běžná cena" },
+  ],
+  "MLÉČNÉ / VEJCE::Smetana 12%": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Mlékárna Kunín Zakysaná smetana 12% 190g", packaging: "190g", price: "26,90 Kč", note: "Běžná cena" },
+  ],
+  "MLÉČNÉ / VEJCE::Sýr Eidam": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "K-Classic Eidam 30% polotvrdý sýr plátky", packaging: "100g", price: "12,90 Kč", note: "Platí do 14.07." },
+  ],
+  "MLÉČNÉ / VEJCE::Tvaroh": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Tvaroh polotučný Karlova koruna", packaging: "250g", price: "12,90 Kč", note: "Platí do 14.07." },
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Milko Tvaroh polotučný", packaging: "250g", price: "18,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Tvaroh polotučný 250g", packaging: "250g", price: "19,90 Kč", note: "Běžná cena" },
+  ],
+  "MLÉČNÉ / VEJCE::Vejce": [
+    { shop: "LIDL", validFrom: "2026-07-05", validTo: "2026-07-12", product: "Čerstvá vejce M, 10 kusů, podestýlka", packaging: "10ks", price: "49,90 Kč", note: "Platí do 12.07." },
+  ],
+  "OBILOVINY / LUŠTĚNINY::Fazole": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "BASSTA Fazole červené/bílé", packaging: "400g", price: "14,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Fazole barevné borlotti ve vodním nálevu 400g", packaging: "400g", price: "15,90 Kč", note: "Běžná cena" },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Fazole s kukuřicí v rajčatové omáčce Gustito", packaging: "430g", price: "26,90 Kč", note: "Platí do 14.07." },
+  ],
+  "OBILOVINY / LUŠTĚNINY::Rýže": [
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Gustona Rýže dlouhozrnná", packaging: "400g", price: "19,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Wholegrain rýže dlouhozrnná 500g", packaging: "500g", price: "24,90 Kč", note: "Běžná cena" },
+    { shop: "LIDL", validFrom: "2026-07-05", validTo: "2026-07-12", product: "Vitana Rýže dlouhozrnná", packaging: "5kg", price: "139,90 Kč", note: "Platí do 12.07." },
+  ],
+  "OBILOVINY / LUŠTĚNINY::Vločky": [
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Emma Ovesné vločky", packaging: "500g", price: "12,90 Kč", note: "Platí do 14.07." },
+  ],
+  "OBILOVINY / LUŠTĚNINY::Čočka": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Menu Gold Čočka 500g", packaging: "500g", price: "41,90 Kč", note: "Běžná cena" },
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Salát Kuře a červená čočka", packaging: "350g", price: "99,90 Kč", note: "Platí do 14.07." },
+  ],
+  "OSTATNÍ::Paštika": [
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Hamé Paštika Májka", packaging: "75g", price: "14,90 Kč", note: "Platí do 14.07." },
+  ],
+  "OSTATNÍ::Vánočka": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Vánočka 400g", packaging: "400g", price: "44,90 Kč", note: "Běžná cena" },
+  ],
+  "OVOCE::Jablko": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Jablka červená", packaging: "1 kg", price: "39,90 Kč", note: "Běžná cena" },
+  ],
+  "PEČIVO::Chleba": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Semínkový chléb", packaging: "400g", price: "29,90 Kč", note: "Platí do 14.07." },
+    { shop: "Albert", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Chléb maltézský", packaging: "400g", price: "29,90 Kč", note: "Běžná cena" },
+  ],
+  "PEČIVO::Rohlíky": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Rohlík císařský 85g", packaging: "85g", price: "8,90 Kč", note: "Běžná cena" },
+  ],
+  "POLOTOVARY::Citronka": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "The Grower's Harvest Citrónka 350ml", packaging: "350ml", price: "13,90 Kč", note: "Běžná cena" },
+  ],
+  "POLOTOVARY::Hořčice kremžská": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Stockwell & Co. Hořčice kremžská 400g", packaging: "400g", price: "12,90 Kč", note: "Běžná cena" },
+  ],
+  "POLOTOVARY::Hořčice plnotučná": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Stockwell & Co. Hořčice plnotučná 400g", packaging: "400g", price: "12,90 Kč", note: "Běžná cena" },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Hořčice plnotučná/kremžská", packaging: "340g", price: "14,90 Kč", note: "Platí do 14.07." },
+  ],
+  "POLOTOVARY::Kečup": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Gourmet kečup jemný Spak", packaging: "450g", price: "34,90 Kč", note: "Platí do 14.07." },
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Gustona Kečup jemný", packaging: "900g", price: "35,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Kečup jemný 500g", packaging: "500g", price: "44,90 Kč", note: "Běžná cena" },
+  ],
+  "POLOTOVARY::Ocet": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Ocet lihový Gustito", packaging: "1l", price: "10,90 Kč", note: "Platí do 14.07." },
+  ],
+  "POLOTOVARY::Sojovka": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "MAGGI Sójová omáčka 190ml", packaging: "190ml", price: "49,90 Kč", note: "Běžná cena" },
+  ],
+  "SLADKÉ::Granko": [
+    { shop: "LIDL", validFrom: "2026-07-05", validTo: "2026-07-12", product: "Granko rychle rozpustné kakao", packaging: "500g", price: "89,90 Kč", note: "Platí do 12.07." },
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Granko instantní kakaový nápoj", packaging: "400g", price: "89,90 Kč", note: "Platí do 14.07." },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Granko", packaging: "550g", price: "99,90 Kč", note: "Platí do 14.07." },
+  ],
+  "SLADKÉ::Marmeláda": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Gold Plus Extra džem jahodový 340g", packaging: "340g", price: "79,90 Kč", note: "Běžná cena" },
+  ],
+  "SLADKÉ::Nutella 600g": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Nutella", packaging: "350g", price: "79,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Nutella Pomazánka s lískovými ořechy a kakaem 1000g", packaging: "1000g", price: "269,90 Kč", note: "Běžná cena" },
+  ],
+  "SLADKÉ::Perník": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Plněná perníková srdce 160g", packaging: "160g", price: "35,90 Kč", note: "Běžná cena" },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Vitana Perník Tradiční", packaging: "550g", price: "39,90 Kč", note: "Platí do 14.07." },
+  ],
+  "STERILIZOVANÉ::Hrášek": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Mražená zelenina hrášek", packaging: "450g", price: "21,90 Kč", note: "Platí do 14.07." },
+  ],
+  "STERILIZOVANÉ::Kukuřice": [
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Albert Kukuřice", packaging: "350g", price: "19,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "HAMI hvězdičky kukuřice-quinoa s ananasem 20 g", packaging: "20 g", price: "27,90 Kč", note: "Běžná cena" },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Kukuřice sladká Penny", packaging: "3x150/140g", price: "39,90 Kč", note: "Platí do 14.07." },
+  ],
+  "STERILIZOVANÉ::Okurky": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "K-Classic Okurky ve sladkokyselém nálevu", packaging: "670g", price: "26,90 Kč", note: "Platí do 14.07." },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Okurky Znojmia", packaging: "520/260g", price: "29,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Machland Okurky 5 - 8 cm 540g", packaging: "540g", price: "29,90 Kč", note: "Běžná cena" },
+  ],
+  "STERILIZOVANÉ::Protlak": [
+    { shop: "LIDL", validFrom: "2026-07-05", validTo: "2026-07-12", product: "Baresa Rajčatový protlak", packaging: "140g", price: "9,90 Kč", note: "Platí do 12.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Rajčatový protlak 140g", packaging: "140g", price: "19,90 Kč", note: "Běžná cena" },
+  ],
+  "SUCHÉ::Arašidy": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "KK Arašídy pražené a solené", packaging: "227g", price: "44,90 Kč", note: "Platí do 14.07." },
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Ar Rashid Arašídy pražené solené", packaging: "350g", price: "59,90 Kč", note: "Platí do 14.07." },
+  ],
+  "SUCHÉ::Chleba": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Semínkový chléb", packaging: "400g", price: "29,90 Kč", note: "Platí do 14.07." },
+    { shop: "Albert", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Chléb maltézský", packaging: "400g", price: "29,90 Kč", note: "Běžná cena" },
+  ],
+  "SUCHÉ::Cukr": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Cukr krystal Karlova koruna", packaging: "1kg", price: "14,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Korunní Cukr Krystal 1000g", packaging: "1000g", price: "24,90 Kč", note: "Běžná cena" },
+  ],
+  "SUCHÉ::Hladká mouka": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Mouka hladká pšeničná", packaging: "1kg", price: "9,90 Kč", note: "Platí do 14.07." },
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Albert Mouka hladká", packaging: "1kg", price: "9,90 Kč", note: "Platí do 14.07." },
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Mlýn Perner Špaldová mouka hladká", packaging: "1kg", price: "26,90 Kč", note: "Platí do 14.07." },
+  ],
+  "SUCHÉ::Knedlík": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Poctivý knedlík houskový 500g", packaging: "500g", price: "34,90 Kč", note: "Běžná cena" },
+  ],
+  "SUCHÉ::Lupinky": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Bramborové lupínky smažené s příchutí zakysané smetany a cibule 130g", packaging: "130g", price: "23,90 Kč", note: "Běžná cena" },
+  ],
+  "SUCHÉ::Polohrubá mouka": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Mouka polohrubá/hrubá", packaging: "1kg", price: "8,90 Kč", note: "Platí do 14.07." },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Mouka polohrubá pšeničná", packaging: "1kg", price: "9,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Mouka polohrubá pšeničná 1kg", packaging: "1kg", price: "9,90 Kč", note: "Běžná cena" },
+  ],
+  "SUCHÉ::Strouhanka": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Penam Strouhanka", packaging: "500g", price: "21,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Druid Kukuřičná strouhanka 200g", packaging: "200g", price: "39,90 Kč", note: "Běžná cena" },
+  ],
+  "SUCHÉ::Sůl": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Solné Mlýny Sůl jedlá kamenná s jodem 1kg", packaging: "1kg", price: "9,90 Kč", note: "Běžná cena" },
+  ],
+  "SUCHÉ::Tortilly": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Santa Maria Křupavé smažené kukuřičné tortilly 12 ks 135g", packaging: "12 ks", price: "79,90 Kč", note: "Běžná cena" },
+  ],
+  "TUKY::Hovězí bujón": [
+    { shop: "LIDL", validFrom: "2026-07-05", validTo: "2026-07-12", product: "Knorr Bohatý bujón", packaging: "112g", price: "29,90 Kč", note: "Platí do 12.07." },
+  ],
+  "TUKY::Máslo": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Máslo 82% tuku 250g", packaging: "250g", price: "34,90 Kč", note: "Běžná cena" },
+  ],
+  "TUKY::Olej": [
+    { shop: "Kaufland", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Slunečnicový olej", packaging: "1l", price: "29,90 Kč", note: "Platí do 14.07." },
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Slunečnicový olej Penny", packaging: "1l", price: "29,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Giana Slunečnicový olej 1l", packaging: "1l", price: "34,90 Kč", note: "Běžná cena" },
+  ],
+  "TUKY::Rama": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Rama Crema na vaření 15% 200ml", packaging: "200ml", price: "29,90 Kč", note: "Běžná cena" },
+  ],
+  "ZELENINA::Brambory": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Brambory rané volné", packaging: "1 kg", price: "14,90 Kč", note: "Běžná cena" },
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Albert Brambory rané balené", packaging: "2kg", price: "36,90 Kč", note: "Platí do 14.07." },
+  ],
+  "ZELENINA::Celer": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Celer Machland", packaging: "330/180g", price: "19,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Celer", packaging: "1 kg", price: "19,90 Kč", note: "Běžná cena" },
+  ],
+  "ZELENINA::Cibule": [
+    { shop: "Penny", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Cibule kuchyňská žlutá", packaging: "1 kg", price: "9,90 Kč", note: "Akce -50% (kupi.cz)" },
+    { shop: "Kaufland", validFrom: "2026-07-08", validTo: "2026-07-14", product: "Cibule kuchyňská žlutá", packaging: "1 kg", price: "9,90 Kč", note: "Akční cena (kupi.cz)" },
+  ],
+  "ZELENINA::Mrkev": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Mrkev", packaging: "1kg", price: "19,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Mrkev svazek", packaging: "1 ks", price: "29,90 Kč", note: "Běžná cena" },
+  ],
+  "ZELENINA::Okurka": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Okurka hadovka", packaging: "1 ks", price: "24,90 Kč", note: "Běžná cena" },
+  ],
+  "ZELENINA::Petržel": [
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Petržel hladkolistá 100g", packaging: "100g", price: "27,90 Kč", note: "Běžná cena" },
+  ],
+  "ZELENINA::Česnek": [
+    { shop: "Penny", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Česnek balený XXL", packaging: "500g", price: "39,90 Kč", note: "Platí do 14.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Jim Jerky Biltong sušené hovězí maso s příchutí česneku 20g", packaging: "20g", price: "79,90 Kč", note: "Běžná cena" },
+    { shop: "Albert", validFrom: "2026-07-07", validTo: "2026-07-14", product: "Česnek volný", packaging: "1kg", price: "99,00 Kč", note: "Platí do 14.07." },
+  ],
+  "ZELENINA::Ředkvičky": [
+    { shop: "LIDL", validFrom: "2026-07-05", validTo: "2026-07-12", product: "Ředkvičky", packaging: "1 svazek", price: "7,90 Kč", note: "Platí do 12.07." },
+    { shop: "Tesco", validFrom: "2026-07-09", validTo: "2026-07-23", product: "Ředkvičky", packaging: "1 ks", price: "12,90 Kč", note: "Běžná cena" },
   ],
 };
 
-export const ALL_SHOPS = ["Albert", "Kaufland", "Lidl", "Penny", "Tesco"];
+export const ALL_SHOPS = ["Albert","Penny","Kaufland","LIDL","Tesco"];
 
 export const PROMO_PERIODS = [
-  { label: "1.–7. 7.", from: "2026-07-01", to: "2026-07-07" },
-  { label: "6.–8. 7.", from: "2026-07-06", to: "2026-07-08" },
-  { label: "8.–14. 7.", from: "2026-07-08", to: "2026-07-14" },
-  { label: "9.–12. 7.", from: "2026-07-09", to: "2026-07-12" },
+  { label: "6.7.–12.7.", from: "2026-07-06", to: "2026-07-12" },
+  { label: "13.7.–19.7.", from: "2026-07-13", to: "2026-07-19" },
 ];

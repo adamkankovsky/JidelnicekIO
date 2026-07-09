@@ -47,7 +47,11 @@ export default function ShoppingScreen() {
   };
 
   const toggleShop = (shop: string) => {
-    setShopFilter(shopFilter === shop ? null : shop);
+    if (shopFilter.includes(shop)) {
+      setShopFilter(shopFilter.filter((s) => s !== shop));
+    } else {
+      setShopFilter([...shopFilter, shop]);
+    }
   };
 
   const togglePeriod = (period: { from: string; to: string }) => {
@@ -128,23 +132,26 @@ export default function ShoppingScreen() {
           <Text className="mb-2 text-sm font-bold text-camp-text">Filtrovat podle obchodu</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-3">
             <View className="flex-row gap-2">
-              {ALL_SHOPS.map((shop) => (
-                <Pressable
-                  key={shop}
-                  onPress={() => toggleShop(shop)}
-                  className={`rounded-lg border px-3 py-1.5 ${
-                    shopFilter === shop
-                      ? 'border-camp-primary bg-camp-primary'
-                      : 'border-camp-accent bg-white'
-                  }`}>
-                  <Text
-                    className={`text-sm ${
-                      shopFilter === shop ? 'font-semibold text-white' : 'text-camp-text'
+              {ALL_SHOPS.map((shop) => {
+                const active = shopFilter.includes(shop);
+                return (
+                  <Pressable
+                    key={shop}
+                    onPress={() => toggleShop(shop)}
+                    className={`rounded-lg border px-3 py-1.5 ${
+                      active
+                        ? 'border-camp-primary bg-camp-primary'
+                        : 'border-camp-accent bg-white'
                     }`}>
-                    {shop}
-                  </Text>
-                </Pressable>
-              ))}
+                    <Text
+                      className={`text-sm ${
+                        active ? 'font-semibold text-white' : 'text-camp-text'
+                      }`}>
+                      {shop}
+                    </Text>
+                  </Pressable>
+                );
+              })}
             </View>
           </ScrollView>
 
@@ -167,9 +174,9 @@ export default function ShoppingScreen() {
             })}
           </View>
 
-          {(shopFilter || periodFilter) ? (
+          {(shopFilter.length > 0 || periodFilter) ? (
             <Pressable
-              onPress={() => { setShopFilter(null); setPeriodFilter(null); }}
+              onPress={() => { setShopFilter([]); setPeriodFilter(null); }}
               className="mt-3 items-center rounded-lg bg-camp-accent py-2">
               <Text className="text-sm font-semibold text-camp-primary">Zrušit filtry</Text>
             </Pressable>

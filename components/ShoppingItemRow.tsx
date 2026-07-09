@@ -10,19 +10,17 @@ import { formatShoppingQuantity, getBestDeal, getEffectiveUnitPrice, getPackageC
 interface ShoppingItemRowProps {
   category: string;
   item: ShoppingItem;
-  shopFilter: string | null;
+  shopFilter: string[];
   periodFilter: { from: string; to: string } | null;
 }
 
-function matchesDealFilters(
+function isDealHighlighted(
   deal: DealOffer,
-  shopFilter: string | null,
+  shopFilter: string[],
   periodFilter: { from: string; to: string } | null,
 ): boolean {
-  if (shopFilter && deal.shop !== shopFilter) return false;
-  if (periodFilter) {
-    if (deal.validFrom !== periodFilter.from || deal.validTo !== periodFilter.to) return false;
-  }
+  if (shopFilter.length > 0 && !shopFilter.includes(deal.shop)) return false;
+  if (periodFilter && (deal.validFrom !== periodFilter.from || deal.validTo !== periodFilter.to)) return false;
   return true;
 }
 
@@ -47,11 +45,9 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
   const [editPrice, setEditPrice] = useState('');
   const [editShop, setEditShop] = useState('');
 
-  const filteredDeals = deals.filter((d) => matchesDealFilters(d, shopFilter, periodFilter));
-
-  if (shopFilter || periodFilter) {
-    if (filteredDeals.length === 0 && !purchase) return null;
-  }
+  const hasFilter = shopFilter.length > 0 || periodFilter !== null;
+  const highlightedDeals = deals.filter((d) => isDealHighlighted(d, shopFilter, periodFilter));
+  const otherDeals = hasFilter ? deals.filter((d) => !isDealHighlighted(d, shopFilter, periodFilter)) : [];
 
   const openEdit = () => {
     setEditPrice(purchase?.price != null ? String(purchase.price) : '');
@@ -123,22 +119,39 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
         </View>
 
         {/* Deal offers */}
-        {filteredDeals.length > 0 ? (
+        {deals.length > 0 ? (
           <View className="ml-9 mt-2">
-            {filteredDeals.map((deal, i) => (
-              <View key={`${deal.shop}-${deal.validFrom}-${i}`} className="mb-1 flex-row flex-wrap items-center">
-                <Text className="mr-1 rounded bg-camp-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-camp-primary">
+            {/* Highlighted deals (matching filter) shown first */}
+            {highlightedDeals.map((deal, i) => (
+              <View key={`h-${deal.shop}-${deal.validFrom}-${i}`} className="mb-1 flex-row flex-wrap items-center">
+                <Text className="mr-1 rounded bg-camp-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-camp-primary">
                   {deal.shop}
                 </Text>
                 <Text className="mr-1 text-[10px] text-camp-muted">
                   {formatDate(deal.validFrom)}–{formatDate(deal.validTo)}
                 </Text>
-                <Text className="text-xs font-semibold text-camp-warm">{deal.price}</Text>
+                <Text className="text-xs font-bold text-camp-warm">{deal.price}</Text>
                 <Text className="ml-1 text-[10px] text-camp-muted">({deal.packaging})</Text>
               </View>
             ))}
-            {filteredDeals[0]?.note ? (
-              <Text className="mt-0.5 text-[10px] italic text-camp-muted">{filteredDeals[0].note}</Text>
+            {/* Other deals (not matching filter) shown dimmed */}
+            {otherDeals.map((deal, i) => (
+              <View key={`o-${deal.shop}-${deal.validFrom}-${i}`} className="mb-1 flex-row flex-wrap items-center opacity-40">
+                <Text className="mr-1 rounded bg-camp-muted/10 px-1.5 py-0.5 text-[10px] font-semibold text-camp-muted">
+                  {deal.shop}
+                </Text>
+                <Text className="mr-1 text-[10px] text-camp-muted">
+                  {formatDate(deal.validFrom)}–{formatDate(deal.validTo)}
+                </Text>
+                <Text className="text-xs font-semibold text-camp-muted">{deal.price}</Text>
+                <Text className="ml-1 text-[10px] text-camp-muted">({deal.packaging})</Text>
+              </View>
+            ))}
+            {/* Show note from first highlighted deal, or first deal if no filter */}
+            {(highlightedDeals[0] || deals[0])?.note ? (
+              <Text className="mt-0.5 text-[10px] italic text-camp-muted">
+                {(highlightedDeals[0] || deals[0]).note}
+              </Text>
             ) : null}
           </View>
         ) : null}
@@ -177,7 +190,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
             <TextInput
               value={editPrice}
               onChangeText={setEditPrice}
-              placeholder={`např. ${filteredDeals[0]?.price.replace(/[^\d,.]/g, '') || '9,90'}`}
+              placeholder={`např. ${(highlightedDeals[0] || deals[0])?.price.replace(/[^\d,.]/g, '') || '9,90'}`}
               keyboardType="decimal-pad"
               className="mb-4 rounded-xl border border-camp-accent px-4 py-3 text-base text-camp-text"
             />

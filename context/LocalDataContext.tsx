@@ -62,7 +62,7 @@ interface LocalDataContextValue {
   totalCount: number;
   checkedCount: number;
   hidePurchased: boolean;
-  shopFilter: string | null;
+  shopFilter: string[];
   periodFilter: PromoPeriodFilter | null;
   isChecked: (key: string) => boolean;
   toggleItem: (key: string) => void;
@@ -70,7 +70,7 @@ interface LocalDataContextValue {
   clearAllChecked: () => void;
   checkAll: () => void;
   setHidePurchased: (value: boolean) => void;
-  setShopFilter: (shop: string | null) => void;
+  setShopFilter: (shops: string[]) => void;
   setPeriodFilter: (period: PromoPeriodFilter | null) => void;
   // purchases
   purchases: AppLocalState['purchases'];
@@ -281,10 +281,10 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   );
 
   const setShopFilter = useCallback(
-    (shop: string | null) => {
+    (shops: string[]) => {
       updateState((current) => ({
         ...current,
-        shopping: { ...current.shopping, shopFilter: shop },
+        shopping: { ...current.shopping, shopFilter: shops },
       }));
     },
     [updateState],

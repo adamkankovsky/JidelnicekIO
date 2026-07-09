@@ -38,7 +38,8 @@
     "serve:web": "npx expo serve dist",
     "serve:web:gh": "node scripts/serve-github-pages.mjs",
     "preview:web": "npm run export:web && npm run serve:web",
-    "preview:web:gh": "npm run export:web:gh && npm run serve:web:gh"
+    "preview:web:gh": "npm run export:web:gh && npm run serve:web:gh",
+    "fetch:deals": "node scripts/fetch-potravinka-deals.mjs"
   },
   "private": true
 }

@@ -34,7 +34,7 @@ export interface AppLocalState {
   shopping: {
     checked: CheckedItemsMap;
     hidePurchased: boolean;
-    shopFilter: string | null;
+    shopFilter: string[];
     periodFilter: PromoPeriodFilter | null;
   };
   purchases: ActualPurchasesMap;
@@ -52,7 +52,7 @@ export function createDefaultState(): AppLocalState {
     shopping: {
       checked: {},
       hidePurchased: false,
-      shopFilter: null,
+      shopFilter: [],
       periodFilter: null,
     },
     purchases: {},
@@ -64,14 +64,22 @@ export function createDefaultState(): AppLocalState {
   };
 }
 
+function normalizeShopFilter(raw: unknown): string[] {
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === 'string') return [raw];
+  return [];
+}
+
 function mergeState(base: AppLocalState, patch: Partial<AppLocalState>): AppLocalState {
-  return {
+  const merged = {
     version: STORAGE_VERSION,
     savedAt: new Date().toISOString(),
     shopping: { ...base.shopping, ...patch.shopping },
     purchases: { ...base.purchases, ...patch.purchases },
     diners: { ...base.diners, ...patch.diners },
   };
+  merged.shopping.shopFilter = normalizeShopFilter(merged.shopping.shopFilter);
+  return merged;
 }
 
 async function loadLegacyState(): Promise<AppLocalState | null> {
