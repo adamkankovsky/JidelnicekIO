@@ -1,26 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ShoppingCategory } from '@/components/ShoppingCategory';
 import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
-import { ALL_SHOPS, PROMO_PERIODS } from '@/data/deals';
+import { ALL_SHOPS, DEAL_OFFERS } from '@/data/deals';
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { downloadTextFile } from '@/utils/downloadFile';
 import { buildShoppingListCsv } from '@/utils/exportIngredients';
-
-function computeEstimatedTotal(): number {
-  let total = 0;
-  for (const cat of INGREDIENT_CATEGORIES) {
-    for (const item of cat.items) {
-      total += item.shop1 ?? item.shop2 ?? 0;
-    }
-  }
-  return total;
-}
-
-const ESTIMATED_TOTAL = computeEstimatedTotal();
+import { computeShoppingListEstimate, getPromoPeriodsFromDeals } from '@/utils/shopping';
 
 export default function ShoppingScreen() {
   const {
@@ -35,6 +24,12 @@ export default function ShoppingScreen() {
     setPeriodFilter,
   } = useShopping();
   const { totalSpent } = usePurchases();
+
+  const promoPeriods = useMemo(() => getPromoPeriodsFromDeals(DEAL_OFFERS), []);
+  const estimate = useMemo(
+    () => computeShoppingListEstimate(INGREDIENT_CATEGORIES, DEAL_OFFERS, shopFilter, periodFilter),
+    [shopFilter, periodFilter],
+  );
 
   const progress = totalCount > 0 ? checkedCount / totalCount : 0;
   const remaining = totalCount - checkedCount;
@@ -85,7 +80,15 @@ export default function ShoppingScreen() {
           <View className="mt-3 flex-row justify-between rounded-xl bg-camp-accent/50 px-3 py-2">
             <View>
               <Text className="text-[10px] text-camp-muted">Odhad nákupu</Text>
-              <Text className="text-base font-bold text-camp-text">{ESTIMATED_TOTAL.toLocaleString('cs-CZ')} Kč</Text>
+              <Text className="text-base font-bold text-camp-text">
+                {estimate.total > 0 ? `~${Math.round(estimate.total).toLocaleString('cs-CZ')} Kč` : '—'}
+              </Text>
+              {estimate.pricedItemCount > 0 ? (
+                <Text className="text-[10px] text-camp-muted">
+                  z {estimate.pricedItemCount} položek s akcí
+                  {estimate.missingItemCount > 0 ? ` · ${estimate.missingItemCount} bez ceny` : ''}
+                </Text>
+              ) : null}
             </View>
             <View className="items-end">
               <Text className="text-[10px] text-camp-muted">Skutečně utraceno</Text>
@@ -157,7 +160,7 @@ export default function ShoppingScreen() {
 
           <Text className="mb-2 text-sm font-bold text-camp-text">Filtrovat podle akčního období</Text>
           <View className="flex-row flex-wrap gap-2">
-            {PROMO_PERIODS.map((p) => {
+            {promoPeriods.map((p) => {
               const active = periodFilter?.from === p.from && periodFilter?.to === p.to;
               return (
                 <Pressable

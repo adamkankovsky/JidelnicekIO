@@ -12,7 +12,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { DEAL_OFFERS } from '@/data/deals';
 import type { ActualPurchase, DinersConfig, IngredientOverride } from '@/data/types';
-import { getPurchaseLineTotal, getShoppingItemKey } from '@/utils/shopping';
+import { getDealFilterOptions, getPurchaseLineTotal, getShoppingItemKey } from '@/utils/shopping';
 import {
   createDefaultState,
   exportStateJson,
@@ -338,7 +338,12 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
 
         const purchase = state.purchases[key];
         const deals = DEAL_OFFERS[key] ?? [];
-        const lineTotal = getPurchaseLineTotal(item, purchase, deals);
+        const lineTotal = getPurchaseLineTotal(
+          item,
+          purchase,
+          deals,
+          getDealFilterOptions([], null),
+        );
         if (lineTotal != null) sum += lineTotal;
       }
     }

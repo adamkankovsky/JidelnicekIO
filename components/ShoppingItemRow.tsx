@@ -1,11 +1,23 @@
 import React, { useState } from 'react';
 import { Alert, Modal, Pressable, Text, TextInput, View } from 'react-native';
 
-import type { DealOffer, ShoppingItem } from '@/data/types';
+import type { ShoppingItem } from '@/data/types';
 import { DEAL_OFFERS, ALL_SHOPS } from '@/data/deals';
 import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
-import { formatShoppingQuantity, getBestDeal, getEffectiveUnitPrice, getPackageCount, getPackageLabel, getPurchaseLineTotal, getShoppingItemKey, isUsingDealPrice, parseShoppingMeasure } from '@/utils/shopping';
+import {
+  filterDeals,
+  formatShoppingQuantity,
+  getBestDeal,
+  getDealFilterOptions,
+  getEffectiveUnitPrice,
+  getPackageCount,
+  getPackageLabel,
+  getPurchaseLineTotal,
+  getShoppingItemKey,
+  isUsingDealPrice,
+  parseShoppingMeasure,
+} from '@/utils/shopping';
 
 interface ShoppingItemRowProps {
   category: string;
@@ -14,31 +26,23 @@ interface ShoppingItemRowProps {
   periodFilter: { from: string; to: string } | null;
 }
 
-function isDealHighlighted(
-  deal: DealOffer,
-  shopFilter: string[],
-  periodFilter: { from: string; to: string } | null,
-): boolean {
-  if (shopFilter.length > 0 && !shopFilter.includes(deal.shop)) return false;
-  if (periodFilter && (deal.validFrom !== periodFilter.from || deal.validTo !== periodFilter.to)) return false;
-  return true;
-}
-
 export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: ShoppingItemRowProps) {
   const { isChecked, toggleItem } = useShopping();
   const { getPurchase, setPurchase } = usePurchases();
   const key = getShoppingItemKey(category, item);
   const purchased = isChecked(key);
   const quantity = formatShoppingQuantity(item);
-  const deals = DEAL_OFFERS[key] ?? [];
+  const allDeals = DEAL_OFFERS[key] ?? [];
   const purchase = getPurchase(key);
-  const bestDeal = getBestDeal(deals);
-  const lineTotal = getPurchaseLineTotal(item, purchase, deals);
-  const unitPrice = getEffectiveUnitPrice(purchase, deals);
+  const dealOptions = getDealFilterOptions(shopFilter, periodFilter);
+  const estimateDeals = filterDeals(allDeals, dealOptions);
+  const bestDeal = getBestDeal(allDeals, dealOptions);
+  const lineTotal = getPurchaseLineTotal(item, purchase, allDeals, dealOptions);
+  const unitPrice = getEffectiveUnitPrice(purchase, allDeals, dealOptions);
   const needed = parseShoppingMeasure(item);
   const packageCount = purchase?.price != null ? needed.amount : getPackageCount(item, bestDeal);
   const priceUnitLabel = purchase?.price != null ? item.unit : getPackageLabel(bestDeal);
-  const fromDeal = isUsingDealPrice(purchase, deals);
+  const fromDeal = isUsingDealPrice(purchase, allDeals, dealOptions);
   const displayShop = purchase?.shop || bestDeal?.shop || '';
 
   const [editVisible, setEditVisible] = useState(false);
@@ -46,8 +50,16 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
   const [editShop, setEditShop] = useState('');
 
   const hasFilter = shopFilter.length > 0 || periodFilter !== null;
-  const highlightedDeals = deals.filter((d) => isDealHighlighted(d, shopFilter, periodFilter));
-  const otherDeals = hasFilter ? deals.filter((d) => !isDealHighlighted(d, shopFilter, periodFilter)) : [];
+  const validDeals = filterDeals(allDeals, { onlyValid: true });
+  const highlightedDeals = filterDeals(allDeals, dealOptions);
+  const highlightedKeys = new Set(
+    highlightedDeals.map((deal) => `${deal.shop}|${deal.validFrom}|${deal.validTo}|${deal.price}`),
+  );
+  const otherDeals = hasFilter
+    ? validDeals.filter(
+        (deal) => !highlightedKeys.has(`${deal.shop}|${deal.validFrom}|${deal.validTo}|${deal.price}`),
+      )
+    : [];
 
   const openEdit = () => {
     setEditPrice(purchase?.price != null ? String(purchase.price) : '');
@@ -119,9 +131,8 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
         </View>
 
         {/* Deal offers */}
-        {deals.length > 0 ? (
+        {validDeals.length > 0 ? (
           <View className="ml-9 mt-2">
-            {/* Highlighted deals (matching filter) shown first */}
             {highlightedDeals.map((deal, i) => (
               <View key={`h-${deal.shop}-${deal.validFrom}-${i}`} className="mb-1 flex-row flex-wrap items-center">
                 <Text className="mr-1 rounded bg-camp-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-camp-primary">
@@ -147,10 +158,9 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
                 <Text className="ml-1 text-[10px] text-camp-muted">({deal.packaging})</Text>
               </View>
             ))}
-            {/* Show note from first highlighted deal, or first deal if no filter */}
-            {(highlightedDeals[0] || deals[0])?.note ? (
+            {(highlightedDeals[0] || estimateDeals[0])?.note ? (
               <Text className="mt-0.5 text-[10px] italic text-camp-muted">
-                {(highlightedDeals[0] || deals[0]).note}
+                {(highlightedDeals[0] || estimateDeals[0]).note}
               </Text>
             ) : null}
           </View>
@@ -190,7 +200,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
             <TextInput
               value={editPrice}
               onChangeText={setEditPrice}
-              placeholder={`např. ${(highlightedDeals[0] || deals[0])?.price.replace(/[^\d,.]/g, '') || '9,90'}`}
+              placeholder={`např. ${(highlightedDeals[0] || estimateDeals[0])?.price.replace(/[^\d,.]/g, '') || '9,90'}`}
               keyboardType="decimal-pad"
               className="mb-4 rounded-xl border border-camp-accent px-4 py-3 text-base text-camp-text"
             />

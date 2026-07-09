@@ -4,7 +4,7 @@ import type { IngredientCategory } from '@/data/types';
 import { DEAL_OFFERS } from '@/data/deals';
 import { ShoppingItemRow } from '@/components/ShoppingItemRow';
 import { useShopping } from '@/context/ShoppingContext';
-import { getShoppingItemKey } from '@/utils/shopping';
+import { filterDeals, getDealFilterOptions, getShoppingItemKey } from '@/utils/shopping';
 
 interface ShoppingCategoryProps {
   category: IngredientCategory;
@@ -21,12 +21,7 @@ function itemHasMatchingDeal(
 ): boolean {
   const key = `${category}::${itemName}`;
   const deals = DEAL_OFFERS[key] ?? [];
-  if (deals.length === 0) return false;
-  return deals.some((d) => {
-    if (shopFilter.length > 0 && !shopFilter.includes(d.shop)) return false;
-    if (periodFilter && (d.validFrom !== periodFilter.from || d.validTo !== periodFilter.to)) return false;
-    return true;
-  });
+  return filterDeals(deals, getDealFilterOptions(shopFilter, periodFilter)).length > 0;
 }
 
 export function ShoppingCategory({ category, hidePurchased, shopFilter, periodFilter }: ShoppingCategoryProps) {
