@@ -25,6 +25,12 @@ export interface DailyShoppingSection {
   items: AggregatedItem[];
 }
 
+export interface BakeryShoppingBlock {
+  label: string;
+  items: AggregatedItem[];
+  dayRange: string;
+}
+
 export interface DayShoppingResult {
   dayId: string;
   date: string;
@@ -32,6 +38,11 @@ export interface DayShoppingResult {
   sections: DailyShoppingSection[];
   /** IDs of days whose ingredients have been merged into this one */
   mergedFromDayIds: string[];
+}
+
+export interface AllDaysShoppingResult {
+  days: DayShoppingResult[];
+  bakery: BakeryShoppingBlock | null;
 }
 
 const CATEGORY_LABELS: Record<PerishableCategory, string> = {
@@ -172,14 +183,16 @@ export interface AllDaysShoppingConfig {
 
 /**
  * Build shopping lists for all days in the meal plan, accounting for
- * skipped days (chaining merge) and bakery multi-day windows.
+ * skipped days (chaining merge). Bakery is extracted separately and
+ * aggregated across all days into one combined block.
  */
-export function getAllDaysShopping(config: AllDaysShoppingConfig): DayShoppingResult[] {
+export function getAllDaysShopping(config: AllDaysShoppingConfig): AllDaysShoppingResult {
   const allDayIds = MEAL_PLAN.map((d) => d.id);
   const skippedSet = new Set(config.skippedDays);
   const mergeMap = resolveMergeChain(allDayIds, skippedSet);
   const dayById = new Map(MEAL_PLAN.map((d) => [d.id, d]));
 
+  const NON_BAKERY_ORDER: PerishableCategory[] = ['meat', 'dairy', 'vegetable', 'fruit'];
   const results: DayShoppingResult[] = [];
 
   for (const [targetDayId, mergedDayIds] of mergeMap) {
@@ -188,47 +201,17 @@ export function getAllDaysShopping(config: AllDaysShoppingConfig): DayShoppingRe
 
     const sections: DailyShoppingSection[] = [];
 
-    for (const category of CATEGORY_ORDER) {
-      if (category === 'bakery') {
-        if (!config.includeBakery) continue;
-
-        // For bakery, use a window starting from this day
-        const targetIdx = allDayIds.indexOf(targetDayId);
-        const bakeryDayIds: string[] = [];
-        for (let i = 0; i < config.bakeryDays && targetIdx + i < allDayIds.length; i++) {
-          bakeryDayIds.push(allDayIds[targetIdx + i]);
-        }
-        // Also include merged days not already covered
-        for (const mid of mergedDayIds) {
-          if (!bakeryDayIds.includes(mid)) bakeryDayIds.push(mid);
-        }
-
-        const allBakeryItems: DailyIngredientItem[] = [];
-        for (const bid of bakeryDayIds) {
-          const day = dayById.get(bid);
-          if (day) {
-            allBakeryItems.push(...extractPerishableIngredients(day, config.scaledConfig, 'bakery'));
-          }
-        }
-        if (allBakeryItems.length > 0) {
-          sections.push({
-            category: 'bakery',
-            label: CATEGORY_LABELS.bakery,
-            items: aggregateItems(allBakeryItems),
-          });
-        }
-      } else {
-        const allItems: DailyIngredientItem[] = [];
-        for (const day of allSourceDays) {
-          allItems.push(...extractPerishableIngredients(day, config.scaledConfig, category));
-        }
-        if (allItems.length > 0) {
-          sections.push({
-            category,
-            label: CATEGORY_LABELS[category],
-            items: aggregateItems(allItems),
-          });
-        }
+    for (const category of NON_BAKERY_ORDER) {
+      const allItems: DailyIngredientItem[] = [];
+      for (const day of allSourceDays) {
+        allItems.push(...extractPerishableIngredients(day, config.scaledConfig, category));
+      }
+      if (allItems.length > 0) {
+        sections.push({
+          category,
+          label: CATEGORY_LABELS[category],
+          items: aggregateItems(allItems),
+        });
       }
     }
 
@@ -241,7 +224,25 @@ export function getAllDaysShopping(config: AllDaysShoppingConfig): DayShoppingRe
     });
   }
 
-  return results;
+  // Bakery: aggregate across ALL days into one block
+  let bakery: BakeryShoppingBlock | null = null;
+  if (config.includeBakery) {
+    const allBakeryItems: DailyIngredientItem[] = [];
+    for (const day of MEAL_PLAN) {
+      allBakeryItems.push(...extractPerishableIngredients(day, config.scaledConfig, 'bakery'));
+    }
+    if (allBakeryItems.length > 0) {
+      const firstDate = MEAL_PLAN[0]?.date ?? '';
+      const lastDate = MEAL_PLAN[MEAL_PLAN.length - 1]?.date ?? '';
+      bakery = {
+        label: CATEGORY_LABELS.bakery,
+        items: aggregateItems(allBakeryItems),
+        dayRange: `${firstDate} – ${lastDate}`,
+      };
+    }
+  }
+
+  return { days: results, bakery };
 }
 
 export function getMealPlanDays(): { id: string; date: string; dayName: string }[] {

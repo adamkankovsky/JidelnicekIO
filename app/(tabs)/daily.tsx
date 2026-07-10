@@ -7,6 +7,7 @@ import {
   getAllDaysShopping,
   getMealPlanDays,
   type AggregatedItem,
+  type BakeryShoppingBlock,
   type DailyShoppingSection,
   type DayShoppingResult,
 } from '@/utils/dailyShopping';
@@ -104,6 +105,22 @@ function DayCard({
   );
 }
 
+function BakeryTopBlock({ bakery }: { bakery: BakeryShoppingBlock }) {
+  return (
+    <View className="mb-5 overflow-hidden rounded-2xl border border-camp-accent">
+      <View className="bg-amber-600 px-4 py-3">
+        <Text className="text-sm font-bold uppercase tracking-wide text-white">
+          {bakery.label} — celkem
+        </Text>
+        <Text className="mt-0.5 text-xs text-amber-100">{bakery.dayRange}</Text>
+      </View>
+      {bakery.items.map((item, i) => (
+        <ItemRow key={`bakery-${item.name}-${i}`} item={item} />
+      ))}
+    </View>
+  );
+}
+
 function SkippedDayCard({
   dayId,
   date,
@@ -144,7 +161,7 @@ export default function DailyShoppingScreen() {
 
   const allDays = useMemo(() => getMealPlanDays(), []);
 
-  const shoppingResults = useMemo(
+  const { days: shoppingResults, bakery } = useMemo(
     () =>
       getAllDaysShopping({
         skippedDays: dailyShopping.skippedDays,
@@ -233,6 +250,9 @@ export default function DailyShoppingScreen() {
             </View>
           ) : null}
         </View>
+
+        {/* Bakery combined block */}
+        {bakery ? <BakeryTopBlock bakery={bakery} /> : null}
 
         {/* Day list */}
         {allDays.map((day) => {
