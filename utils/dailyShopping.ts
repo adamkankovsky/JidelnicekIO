@@ -190,22 +190,80 @@ export function resolveMergeChain(
 
 export interface AllDaysShoppingConfig {
   skippedDays: string[];
+  skippedBakeryDays: string[];
   bakeryDays: 2 | 3;
   includeBakery: boolean;
   scaledConfig: ScaledMealConfig;
 }
 
 /**
- * Build shopping lists for all days in the meal plan, accounting for
- * skipped days (chaining merge). Bakery is shown per-day, covering
- * a window of bakeryDays (2 or 3) from that shopping day.
+ * Build shopping lists for all days in the meal plan.
+ * Perishables use skippedDays for merge chaining.
+ * Bakery uses skippedBakeryDays independently; windows never overlap —
+ * each day's bakery is assigned to exactly one shopping day.
  */
 export function getAllDaysShopping(config: AllDaysShoppingConfig): DayShoppingResult[] {
   const allDayIds = MEAL_PLAN.map((d) => d.id);
-  const skippedSet = new Set(config.skippedDays);
-  const mergeMap = resolveMergeChain(allDayIds, skippedSet);
   const dayById = new Map(MEAL_PLAN.map((d) => [d.id, d]));
 
+  // Perishable merge chain (uses skippedDays)
+  const skippedSet = new Set(config.skippedDays);
+  const mergeMap = resolveMergeChain(allDayIds, skippedSet);
+
+  // Bakery merge chain (uses skippedBakeryDays, independent)
+  const skippedBakerySet = new Set(config.skippedBakeryDays);
+  const bakeryMergeMap = resolveMergeChain(allDayIds, skippedBakerySet);
+
+  // Build non-overlapping bakery windows:
+  // Walk through bakery shopping days in order; each one claims
+  // bakeryDays consecutive days starting from itself + its merged days.
+  // Already-claimed days are not repeated.
+  const bakeryClaimed = new Set<string>();
+  const bakeryByDay = new Map<string, BakerySection>();
+
+  if (config.includeBakery) {
+    for (const [targetDayId, mergedDayIds] of bakeryMergeMap) {
+      const targetIdx = allDayIds.indexOf(targetDayId);
+
+      // Collect days for this bakery window (non-overlapping)
+      const windowDayIds: string[] = [];
+      let cursor = targetIdx;
+      while (windowDayIds.length < config.bakeryDays && cursor < allDayIds.length) {
+        const id = allDayIds[cursor];
+        if (!bakeryClaimed.has(id)) {
+          windowDayIds.push(id);
+        }
+        cursor++;
+      }
+      // Also include merged bakery days that aren't already claimed
+      for (const mid of mergedDayIds) {
+        if (!bakeryClaimed.has(mid) && !windowDayIds.includes(mid)) {
+          windowDayIds.push(mid);
+        }
+      }
+
+      // Mark all as claimed
+      for (const id of windowDayIds) {
+        bakeryClaimed.add(id);
+      }
+
+      // Extract bakery items
+      const bakeryItems: DailyIngredientItem[] = [];
+      const coversDates: string[] = [];
+      for (const bid of windowDayIds) {
+        const day = dayById.get(bid);
+        if (day) {
+          bakeryItems.push(...extractPerishableIngredients(day, config.scaledConfig, 'bakery'));
+          coversDates.push(day.date);
+        }
+      }
+      if (bakeryItems.length > 0) {
+        bakeryByDay.set(targetDayId, { items: aggregateItems(bakeryItems), coversDates });
+      }
+    }
+  }
+
+  // Build per-day results (perishable sections)
   const NON_BAKERY_ORDER: PerishableCategory[] = ['meat', 'dairy', 'vegetable', 'fruit'];
   const results: DayShoppingResult[] = [];
 
@@ -229,31 +287,8 @@ export function getAllDaysShopping(config: AllDaysShoppingConfig): DayShoppingRe
       }
     }
 
-    // Bakery: cover bakeryDays window from this shopping day + merged days
-    let bakery: BakerySection | null = null;
-    if (config.includeBakery) {
-      const targetIdx = allDayIds.indexOf(targetDayId);
-      const bakeryDayIds: string[] = [];
-      for (let i = 0; i < config.bakeryDays && targetIdx + i < allDayIds.length; i++) {
-        bakeryDayIds.push(allDayIds[targetIdx + i]);
-      }
-      for (const mid of mergedDayIds) {
-        if (!bakeryDayIds.includes(mid)) bakeryDayIds.push(mid);
-      }
-
-      const bakeryItems: DailyIngredientItem[] = [];
-      const coversDates: string[] = [];
-      for (const bid of bakeryDayIds) {
-        const day = dayById.get(bid);
-        if (day) {
-          bakeryItems.push(...extractPerishableIngredients(day, config.scaledConfig, 'bakery'));
-          coversDates.push(day.date);
-        }
-      }
-      if (bakeryItems.length > 0) {
-        bakery = { items: aggregateItems(bakeryItems), coversDates };
-      }
-    }
+    // Attach bakery if this day has one assigned
+    const bakery = bakeryByDay.get(targetDayId) ?? null;
 
     results.push({
       dayId: targetDayId,

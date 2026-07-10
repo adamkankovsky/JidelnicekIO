@@ -29,7 +29,10 @@ export interface PromoPeriodFilter {
 }
 
 export interface DailyShoppingState {
+  /** Days where perishable items (meat/dairy/veg/fruit) are skipped and merged into previous */
   skippedDays: string[];
+  /** Days where bakery is skipped (merged into previous bakery window) */
+  skippedBakeryDays: string[];
   bakeryDays: 2 | 3;
   includeBakery: boolean;
 }
@@ -70,6 +73,7 @@ export function createDefaultState(): AppLocalState {
     },
     dailyShopping: {
       skippedDays: [],
+      skippedBakeryDays: [],
       bakeryDays: 2,
       includeBakery: true,
     },

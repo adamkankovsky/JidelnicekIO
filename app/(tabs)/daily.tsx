@@ -176,6 +176,7 @@ export default function DailyShoppingScreen() {
   const {
     dailyShopping,
     setSkippedDays,
+    setSkippedBakeryDays,
     setBakeryDays,
     setIncludeBakery,
     coefficient,
@@ -189,6 +190,7 @@ export default function DailyShoppingScreen() {
     () =>
       getAllDaysShopping({
         skippedDays: dailyShopping.skippedDays,
+        skippedBakeryDays: dailyShopping.skippedBakeryDays,
         bakeryDays: dailyShopping.bakeryDays,
         includeBakery: dailyShopping.includeBakery,
         scaledConfig: { coefficient, mealDinersOverrides, overrides },
@@ -197,6 +199,7 @@ export default function DailyShoppingScreen() {
   );
 
   const skippedSet = useMemo(() => new Set(dailyShopping.skippedDays), [dailyShopping.skippedDays]);
+  const skippedBakerySet = useMemo(() => new Set(dailyShopping.skippedBakeryDays), [dailyShopping.skippedBakeryDays]);
   const resultByDayId = useMemo(
     () => new Map(shoppingResults.map((r) => [r.dayId, r])),
     [shoppingResults],
@@ -210,18 +213,26 @@ export default function DailyShoppingScreen() {
     }
   };
 
+  const toggleBakerySkip = (dayId: string) => {
+    if (skippedBakerySet.has(dayId)) {
+      setSkippedBakeryDays(dailyShopping.skippedBakeryDays.filter((d) => d !== dayId));
+    } else {
+      setSkippedBakeryDays([...dailyShopping.skippedBakeryDays, dayId]);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-camp-bg" edges={['bottom']}>
       <ScrollView className="flex-1" contentContainerClassName="px-4 pb-8 pt-4">
         <Text className="mb-1 text-2xl font-bold text-camp-primary">Denní nákupy</Text>
         <Text className="mb-4 text-sm text-camp-muted">
-          Čerstvé suroviny po dnech. Přeskoč den a spojí se s předchozím.
+          Čerstvé suroviny po dnech. Přeskoč položky a spojí se s předchozím.
         </Text>
 
-        {/* Bakery controls */}
+        {/* Bakery window setting */}
         <View className="mb-5 rounded-2xl border border-camp-accent bg-white p-4">
           <View className="flex-row items-center justify-between">
-            <Text className="text-sm font-bold text-camp-text">Pečivo</Text>
+            <Text className="text-sm font-bold text-camp-text">Pečivo — okno nákupu</Text>
             <Pressable
               onPress={() => setIncludeBakery(!dailyShopping.includeBakery)}
               className={`rounded-lg border px-3 py-1.5 ${
@@ -233,14 +244,14 @@ export default function DailyShoppingScreen() {
                 className={`text-sm ${
                   dailyShopping.includeBakery ? 'font-semibold text-white' : 'text-camp-text'
                 }`}>
-                {dailyShopping.includeBakery ? 'Zahrnout' : 'Přeskočit'}
+                {dailyShopping.includeBakery ? 'Zahrnout' : 'Skryto'}
               </Text>
             </Pressable>
           </View>
 
           {dailyShopping.includeBakery ? (
             <View className="mt-3">
-              <Text className="mb-2 text-xs text-camp-muted">Nakoupit pečivo na:</Text>
+              <Text className="mb-2 text-xs text-camp-muted">Nakoupit pečivo vždy na:</Text>
               <View className="flex-row gap-2">
                 <Pressable
                   onPress={() => setBakeryDays(2)}
@@ -277,17 +288,43 @@ export default function DailyShoppingScreen() {
 
         {/* Day list */}
         {allDays.map((day) => {
-          const isSkipped = skippedSet.has(day.id);
+          const isPerishableSkipped = skippedSet.has(day.id);
+          const isBakerySkipped = skippedBakerySet.has(day.id);
 
-          if (isSkipped) {
+          // Fully skipped (both perishable and bakery)
+          if (isPerishableSkipped && isBakerySkipped) {
             return (
               <SkippedDayCard
                 key={day.id}
                 dayId={day.id}
                 date={day.date}
                 dayName={day.dayName}
-                onToggleSkip={() => toggleSkip(day.id)}
+                onToggleSkip={() => {
+                  toggleSkip(day.id);
+                  toggleBakerySkip(day.id);
+                }}
               />
+            );
+          }
+
+          // Only perishable skipped
+          if (isPerishableSkipped) {
+            return (
+              <View key={day.id} className="mb-2 overflow-hidden rounded-xl border border-dashed border-camp-accent bg-camp-accent/20">
+                <View className="flex-row items-center justify-between px-4 py-2.5">
+                  <View>
+                    <Text className="text-sm text-camp-muted line-through">
+                      {day.date} {day.dayName}
+                    </Text>
+                    <Text className="text-xs text-camp-muted">suroviny přeskočeny</Text>
+                  </View>
+                  <Pressable
+                    onPress={() => toggleSkip(day.id)}
+                    className="rounded-lg border border-camp-accent bg-white px-3 py-1">
+                    <Text className="text-xs text-camp-text">Obnovit suroviny</Text>
+                  </Pressable>
+                </View>
+              </View>
             );
           }
 
@@ -305,12 +342,19 @@ export default function DailyShoppingScreen() {
                 result={result}
                 mergedDayNames={mergedDayNames}
               />
-              {/* Skip button below the card */}
-              <View className="-mt-2 mb-3 flex-row justify-end pr-2">
+              {/* Skip buttons */}
+              <View className="-mt-2 mb-3 flex-row justify-end gap-2 pr-2">
+                {result.bakery ? (
+                  <Pressable
+                    onPress={() => toggleBakerySkip(day.id)}
+                    className="rounded-lg border border-amber-300 bg-white px-3 py-1">
+                    <Text className="text-xs text-amber-700">Přeskočit pečivo</Text>
+                  </Pressable>
+                ) : null}
                 <Pressable
                   onPress={() => toggleSkip(day.id)}
                   className="rounded-lg border border-camp-accent bg-white px-3 py-1">
-                  <Text className="text-xs text-camp-muted">Přeskočit den</Text>
+                  <Text className="text-xs text-camp-muted">Přeskočit suroviny</Text>
                 </Pressable>
               </View>
             </View>

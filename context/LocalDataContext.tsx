@@ -81,6 +81,7 @@ interface LocalDataContextValue {
   // daily shopping
   dailyShopping: AppLocalState['dailyShopping'];
   setSkippedDays: (days: string[]) => void;
+  setSkippedBakeryDays: (days: string[]) => void;
   setBakeryDays: (days: 2 | 3) => void;
   setIncludeBakery: (value: boolean) => void;
 }
@@ -344,6 +345,16 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     [updateState],
   );
 
+  const setSkippedBakeryDays = useCallback(
+    (days: string[]) => {
+      updateState((current) => ({
+        ...current,
+        dailyShopping: { ...current.dailyShopping, skippedBakeryDays: days },
+      }));
+    },
+    [updateState],
+  );
+
   const setBakeryDays = useCallback(
     (days: 2 | 3) => {
       updateState((current) => ({
@@ -422,6 +433,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       totalSpent,
       dailyShopping: state.dailyShopping,
       setSkippedDays,
+      setSkippedBakeryDays,
       setBakeryDays,
       setIncludeBakery,
     }),
@@ -451,6 +463,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       clearAllPurchases,
       totalSpent,
       setSkippedDays,
+      setSkippedBakeryDays,
       setBakeryDays,
       setIncludeBakery,
     ],
@@ -532,6 +545,7 @@ export function useDailyShopping() {
     dailyShopping: ctx.dailyShopping,
     isLoading: !ctx.isHydrated,
     setSkippedDays: ctx.setSkippedDays,
+    setSkippedBakeryDays: ctx.setSkippedBakeryDays,
     setBakeryDays: ctx.setBakeryDays,
     setIncludeBakery: ctx.setIncludeBakery,
     coefficient: ctx.coefficient,
