@@ -33,8 +33,8 @@ export interface DailyShoppingState {
   skippedDays: string[];
   /** Days where bakery is skipped (merged into previous bakery window) */
   skippedBakeryDays: string[];
-  bakeryDays: 2 | 3;
-  includeBakery: boolean;
+  /** Per-day bakery window size (default 2) */
+  bakeryDaysPerDay: Record<string, 2 | 3>;
 }
 
 export interface AppLocalState {
@@ -74,8 +74,7 @@ export function createDefaultState(): AppLocalState {
     dailyShopping: {
       skippedDays: [],
       skippedBakeryDays: [],
-      bakeryDays: 2,
-      includeBakery: true,
+      bakeryDaysPerDay: {},
     },
   };
 }

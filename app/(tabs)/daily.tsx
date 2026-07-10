@@ -55,9 +55,13 @@ function SectionBlock({ section }: { section: DailyShoppingSection }) {
 function DayCard({
   result,
   mergedDayNames,
+  bakeryDays,
+  onSetBakeryDays,
 }: {
   result: DayShoppingResult;
   mergedDayNames: string[];
+  bakeryDays: 2 | 3;
+  onSetBakeryDays: (days: 2 | 3) => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const totalItems =
@@ -90,7 +94,14 @@ function DayCard({
       {!collapsed ? (
         <View className="px-3 pb-3">
           {/* Bakery first */}
-          {result.bakery ? <BakeryBlock bakery={result.bakery} /> : null}
+          {result.bakery ? (
+            <BakeryBlock
+              bakery={result.bakery}
+              dayId={result.dayId}
+              currentDays={bakeryDays}
+              onSetDays={onSetBakeryDays}
+            />
+          ) : null}
           {/* Other perishables */}
           {result.sections.map((section) => (
             <SectionBlock key={section.category} section={section} />
@@ -106,12 +117,36 @@ function DayCard({
   );
 }
 
-function BakeryBlock({ bakery }: { bakery: BakerySection }) {
+function BakeryBlock({
+  bakery,
+  dayId,
+  currentDays,
+  onSetDays,
+}: {
+  bakery: BakerySection;
+  dayId: string;
+  currentDays: 2 | 3;
+  onSetDays: (days: 2 | 3) => void;
+}) {
   return (
     <View className="mt-2">
-      <Text className="mb-1 px-1 text-xs font-bold uppercase tracking-wide text-amber-700">
-        Pečivo ({bakery.coversDates.join(' – ')})
-      </Text>
+      <View className="mb-1 flex-row items-center justify-between px-1">
+        <Text className="text-xs font-bold uppercase tracking-wide text-amber-700">
+          Pečivo ({bakery.coversDates.join(' – ')})
+        </Text>
+        <View className="flex-row gap-1">
+          <Pressable
+            onPress={() => onSetDays(2)}
+            className={`rounded px-2 py-0.5 ${currentDays === 2 ? 'bg-amber-600' : 'bg-amber-200'}`}>
+            <Text className={`text-xs ${currentDays === 2 ? 'font-bold text-white' : 'text-amber-800'}`}>2d</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => onSetDays(3)}
+            className={`rounded px-2 py-0.5 ${currentDays === 3 ? 'bg-amber-600' : 'bg-amber-200'}`}>
+            <Text className={`text-xs ${currentDays === 3 ? 'font-bold text-white' : 'text-amber-800'}`}>3d</Text>
+          </Pressable>
+        </View>
+      </View>
       <View className="overflow-hidden rounded-xl border border-amber-300 bg-amber-50">
         {bakery.items.map((item, i) => (
           <View key={`bk-${item.name}-${i}`} className="border-b border-amber-200 px-4 py-2.5">
@@ -177,8 +212,7 @@ export default function DailyShoppingScreen() {
     dailyShopping,
     setSkippedDays,
     setSkippedBakeryDays,
-    setBakeryDays,
-    setIncludeBakery,
+    setBakeryDaysForDay,
     coefficient,
     mealDinersOverrides,
     overrides,
@@ -191,8 +225,7 @@ export default function DailyShoppingScreen() {
       getAllDaysShopping({
         skippedDays: dailyShopping.skippedDays,
         skippedBakeryDays: dailyShopping.skippedBakeryDays,
-        bakeryDays: dailyShopping.bakeryDays,
-        includeBakery: dailyShopping.includeBakery,
+        bakeryDaysPerDay: dailyShopping.bakeryDaysPerDay,
         scaledConfig: { coefficient, mealDinersOverrides, overrides },
       }),
     [dailyShopping, coefficient, mealDinersOverrides, overrides],
@@ -228,63 +261,6 @@ export default function DailyShoppingScreen() {
         <Text className="mb-4 text-sm text-camp-muted">
           Čerstvé suroviny po dnech. Přeskoč položky a spojí se s předchozím.
         </Text>
-
-        {/* Bakery window setting */}
-        <View className="mb-5 rounded-2xl border border-camp-accent bg-white p-4">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-sm font-bold text-camp-text">Pečivo — okno nákupu</Text>
-            <Pressable
-              onPress={() => setIncludeBakery(!dailyShopping.includeBakery)}
-              className={`rounded-lg border px-3 py-1.5 ${
-                dailyShopping.includeBakery
-                  ? 'border-camp-primary bg-camp-primary'
-                  : 'border-camp-accent bg-white'
-              }`}>
-              <Text
-                className={`text-sm ${
-                  dailyShopping.includeBakery ? 'font-semibold text-white' : 'text-camp-text'
-                }`}>
-                {dailyShopping.includeBakery ? 'Zahrnout' : 'Skryto'}
-              </Text>
-            </Pressable>
-          </View>
-
-          {dailyShopping.includeBakery ? (
-            <View className="mt-3">
-              <Text className="mb-2 text-xs text-camp-muted">Nakoupit pečivo vždy na:</Text>
-              <View className="flex-row gap-2">
-                <Pressable
-                  onPress={() => setBakeryDays(2)}
-                  className={`flex-1 rounded-lg border py-2 ${
-                    dailyShopping.bakeryDays === 2
-                      ? 'border-camp-primary bg-camp-primary'
-                      : 'border-camp-accent bg-white'
-                  }`}>
-                  <Text
-                    className={`text-center text-sm ${
-                      dailyShopping.bakeryDays === 2 ? 'font-semibold text-white' : 'text-camp-text'
-                    }`}>
-                    2 dny
-                  </Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => setBakeryDays(3)}
-                  className={`flex-1 rounded-lg border py-2 ${
-                    dailyShopping.bakeryDays === 3
-                      ? 'border-camp-primary bg-camp-primary'
-                      : 'border-camp-accent bg-white'
-                  }`}>
-                  <Text
-                    className={`text-center text-sm ${
-                      dailyShopping.bakeryDays === 3 ? 'font-semibold text-white' : 'text-camp-text'
-                    }`}>
-                    3 dny
-                  </Text>
-                </Pressable>
-              </View>
-            </View>
-          ) : null}
-        </View>
 
         {/* Day list */}
         {allDays.map((day) => {
@@ -341,6 +317,8 @@ export default function DailyShoppingScreen() {
               <DayCard
                 result={result}
                 mergedDayNames={mergedDayNames}
+                bakeryDays={dailyShopping.bakeryDaysPerDay[day.id] ?? 2}
+                onSetBakeryDays={(days) => setBakeryDaysForDay(day.id, days)}
               />
               {/* Skip buttons */}
               <View className="-mt-2 mb-3 flex-row justify-end gap-2 pr-2">

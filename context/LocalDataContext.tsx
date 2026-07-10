@@ -82,8 +82,7 @@ interface LocalDataContextValue {
   dailyShopping: AppLocalState['dailyShopping'];
   setSkippedDays: (days: string[]) => void;
   setSkippedBakeryDays: (days: string[]) => void;
-  setBakeryDays: (days: 2 | 3) => void;
-  setIncludeBakery: (value: boolean) => void;
+  setBakeryDaysForDay: (dayId: string, days: 2 | 3) => void;
 }
 
 const LocalDataContext = createContext<LocalDataContextValue | null>(null);
@@ -355,21 +354,14 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     [updateState],
   );
 
-  const setBakeryDays = useCallback(
-    (days: 2 | 3) => {
+  const setBakeryDaysForDay = useCallback(
+    (dayId: string, days: 2 | 3) => {
       updateState((current) => ({
         ...current,
-        dailyShopping: { ...current.dailyShopping, bakeryDays: days },
-      }));
-    },
-    [updateState],
-  );
-
-  const setIncludeBakery = useCallback(
-    (value: boolean) => {
-      updateState((current) => ({
-        ...current,
-        dailyShopping: { ...current.dailyShopping, includeBakery: value },
+        dailyShopping: {
+          ...current.dailyShopping,
+          bakeryDaysPerDay: { ...current.dailyShopping.bakeryDaysPerDay, [dayId]: days },
+        },
       }));
     },
     [updateState],
@@ -434,8 +426,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       dailyShopping: state.dailyShopping,
       setSkippedDays,
       setSkippedBakeryDays,
-      setBakeryDays,
-      setIncludeBakery,
+      setBakeryDaysForDay,
     }),
     [
       isHydrated,
@@ -464,8 +455,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       totalSpent,
       setSkippedDays,
       setSkippedBakeryDays,
-      setBakeryDays,
-      setIncludeBakery,
+      setBakeryDaysForDay,
     ],
   );
 
@@ -546,8 +536,7 @@ export function useDailyShopping() {
     isLoading: !ctx.isHydrated,
     setSkippedDays: ctx.setSkippedDays,
     setSkippedBakeryDays: ctx.setSkippedBakeryDays,
-    setBakeryDays: ctx.setBakeryDays,
-    setIncludeBakery: ctx.setIncludeBakery,
+    setBakeryDaysForDay: ctx.setBakeryDaysForDay,
     coefficient: ctx.coefficient,
     mealDinersOverrides: ctx.mealDinersOverrides,
     overrides: ctx.overrides,
