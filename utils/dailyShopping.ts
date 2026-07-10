@@ -10,6 +10,14 @@ export interface DailyIngredientItem {
   mealLabel: string;
   mealType: string;
   fromDayId?: string;
+  fromDayDate?: string;
+}
+
+export interface AggregatedItemSource {
+  dayDate: string;
+  mealLabel: string;
+  quantity: number | null;
+  unit: string;
 }
 
 export interface AggregatedItem {
@@ -17,6 +25,7 @@ export interface AggregatedItem {
   totalQuantity: number | null;
   unit: string;
   sources: string[];
+  detailedSources: AggregatedItemSource[];
 }
 
 export interface DailyShoppingSection {
@@ -73,6 +82,7 @@ function extractPerishableIngredients(
         mealLabel: meal.label || MEAL_TYPE_LABELS[meal.type],
         mealType: MEAL_TYPE_LABELS[meal.type],
         fromDayId: day.id,
+        fromDayDate: day.date,
       });
     }
   }
@@ -108,11 +118,19 @@ function aggregateItems(items: DailyIngredientItem[]): AggregatedItem[] {
 
     const sources = [...new Set(group.items.map((i) => i.mealLabel))];
 
+    const detailedSources: AggregatedItemSource[] = group.items.map((i) => ({
+      dayDate: i.fromDayDate ?? '',
+      mealLabel: i.mealLabel,
+      quantity: i.quantity,
+      unit: i.unit,
+    }));
+
     result.push({
       name: group.displayName,
       totalQuantity,
       unit: group.unit,
       sources,
+      detailedSources,
     });
   }
 

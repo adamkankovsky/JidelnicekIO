@@ -124,10 +124,19 @@ function BakeryBlock({ bakery }: { bakery: BakerySection }) {
                 </Text>
               ) : null}
             </View>
-            {item.sources.length > 0 ? (
-              <Text className="mt-0.5 text-xs text-camp-muted">
-                {item.sources.join(' · ')}
-              </Text>
+            {item.detailedSources.length > 0 ? (
+              <View className="mt-1">
+                {item.detailedSources.map((src, j) => {
+                  const qty = src.quantity != null
+                    ? `${Number.isInteger(src.quantity) ? src.quantity : src.quantity.toFixed(1)} ${src.unit}`.trim()
+                    : '';
+                  return (
+                    <Text key={j} className="text-xs text-camp-muted">
+                      {src.dayDate} {src.mealLabel}{qty ? ` — ${qty}` : ''}
+                    </Text>
+                  );
+                })}
+              </View>
             ) : null}
           </View>
         ))}
