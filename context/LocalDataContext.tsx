@@ -454,6 +454,8 @@ export function LocalDataProvider({
       setSkippedDays,
       setSkippedBakeryDays,
       setBakeryDaysForDay,
+      dealOffers,
+      allShops: campConfig.allShops,
     }),
     [
       isHydrated,
@@ -483,6 +485,8 @@ export function LocalDataProvider({
       setSkippedDays,
       setSkippedBakeryDays,
       setBakeryDaysForDay,
+      dealOffers,
+      campConfig.allShops,
     ],
   );
 
@@ -567,6 +571,14 @@ export function useDailyShopping() {
     coefficient: ctx.coefficient,
     mealDinersOverrides: ctx.mealDinersOverrides,
     overrides: ctx.overrides,
+  };
+}
+
+export function useDeals() {
+  const ctx = useLocalData();
+  return {
+    dealOffers: ctx.dealOffers,
+    allShops: ctx.allShops,
   };
 }
 

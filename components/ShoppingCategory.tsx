@@ -1,8 +1,8 @@
 import { Text, View } from 'react-native';
 
-import type { IngredientCategory } from '@/data/types';
-import { DEAL_OFFERS } from '@/data/deals';
+import type { DealOffer, IngredientCategory } from '@/data/types';
 import { ShoppingItemRow } from '@/components/ShoppingItemRow';
+import { useDeals } from '@/context/LocalDataContext';
 import { useShopping } from '@/context/ShoppingContext';
 import { filterDeals, getDealFilterOptions, getShoppingItemKey } from '@/utils/shopping';
 
@@ -14,18 +14,20 @@ interface ShoppingCategoryProps {
 }
 
 function itemHasMatchingDeal(
+  dealOffers: Record<string, DealOffer[]>,
   category: string,
   itemName: string,
   shopFilter: string[],
   periodFilter: { from: string; to: string } | null,
 ): boolean {
   const key = `${category}::${itemName}`;
-  const deals = DEAL_OFFERS[key] ?? [];
+  const deals = dealOffers[key] ?? [];
   return filterDeals(deals, getDealFilterOptions(shopFilter, periodFilter)).length > 0;
 }
 
 export function ShoppingCategory({ category, hidePurchased, shopFilter, periodFilter }: ShoppingCategoryProps) {
   const { isChecked } = useShopping();
+  const { dealOffers } = useDeals();
 
   const visibleItems = category.items.filter((item) => {
     if (hidePurchased && isChecked(getShoppingItemKey(category.category, item))) return false;
@@ -38,7 +40,7 @@ export function ShoppingCategory({ category, hidePurchased, shopFilter, periodFi
 
   const hasFilter = shopFilter.length > 0 || periodFilter !== null;
   const matchingCount = hasFilter
-    ? visibleItems.filter((item) => itemHasMatchingDeal(category.category, item.name, shopFilter, periodFilter)).length
+    ? visibleItems.filter((item) => itemHasMatchingDeal(dealOffers, category.category, item.name, shopFilter, periodFilter)).length
     : 0;
 
   const purchasedInCategory = category.items.filter((item) =>

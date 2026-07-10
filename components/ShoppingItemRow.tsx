@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Alert, Modal, Pressable, Text, TextInput, View } from 'react-native';
 
 import type { ShoppingItem } from '@/data/types';
-import { DEAL_OFFERS, ALL_SHOPS } from '@/data/deals';
+import { useDeals } from '@/context/LocalDataContext';
 import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
 import {
@@ -29,10 +29,11 @@ interface ShoppingItemRowProps {
 export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: ShoppingItemRowProps) {
   const { isChecked, toggleItem } = useShopping();
   const { getPurchase, setPurchase } = usePurchases();
+  const { dealOffers, allShops } = useDeals();
   const key = getShoppingItemKey(category, item);
   const purchased = isChecked(key);
   const quantity = formatShoppingQuantity(item);
-  const allDeals = DEAL_OFFERS[key] ?? [];
+  const allDeals = dealOffers[key] ?? [];
   const purchase = getPurchase(key);
   const dealOptions = getDealFilterOptions(shopFilter, periodFilter);
   const estimateDeals = filterDeals(allDeals, dealOptions);
@@ -207,7 +208,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
 
             <Text className="mb-1 text-sm text-camp-muted">Obchod</Text>
             <View className="mb-2 flex-row flex-wrap gap-2">
-              {ALL_SHOPS.map((s) => (
+              {allShops.map((s) => (
                 <Pressable
                   key={s}
                   onPress={() => setEditShop(editShop === s ? '' : s)}
@@ -221,7 +222,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
               ))}
             </View>
             <TextInput
-              value={ALL_SHOPS.includes(editShop) ? '' : editShop}
+              value={allShops.includes(editShop) ? '' : editShop}
               onChangeText={(v) => setEditShop(v)}
               placeholder="Jiný obchod…"
               className="mb-4 rounded-xl border border-camp-accent px-4 py-3 text-base text-camp-text"
