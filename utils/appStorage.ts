@@ -34,7 +34,7 @@ export interface DailyShoppingState {
   /** Days where bakery is skipped (merged into previous bakery window) */
   skippedBakeryDays: string[];
   /** Per-day bakery window size (default 2) */
-  bakeryDaysPerDay: Record<string, 2 | 3>;
+  bakeryDaysPerDay: Record<string, 1 | 2 | 3>;
 }
 
 export interface AppLocalState {
@@ -85,6 +85,21 @@ function normalizeShopFilter(raw: unknown): string[] {
   return [];
 }
 
+function normalizeDailyShopping(raw: Partial<DailyShoppingState> | undefined): DailyShoppingState {
+  const defaults = createDefaultState().dailyShopping;
+  if (!raw) return defaults;
+  return {
+    skippedDays: Array.isArray(raw.skippedDays) ? raw.skippedDays : defaults.skippedDays,
+    skippedBakeryDays: Array.isArray(raw.skippedBakeryDays)
+      ? raw.skippedBakeryDays
+      : defaults.skippedBakeryDays,
+    bakeryDaysPerDay:
+      raw.bakeryDaysPerDay && typeof raw.bakeryDaysPerDay === 'object'
+        ? raw.bakeryDaysPerDay
+        : defaults.bakeryDaysPerDay,
+  };
+}
+
 function mergeState(base: AppLocalState, patch: Partial<AppLocalState>): AppLocalState {
   const merged = {
     version: STORAGE_VERSION,
@@ -92,7 +107,7 @@ function mergeState(base: AppLocalState, patch: Partial<AppLocalState>): AppLoca
     shopping: { ...base.shopping, ...patch.shopping },
     purchases: { ...base.purchases, ...patch.purchases },
     diners: { ...base.diners, ...patch.diners },
-    dailyShopping: { ...base.dailyShopping, ...patch.dailyShopping },
+    dailyShopping: normalizeDailyShopping({ ...base.dailyShopping, ...patch.dailyShopping }),
   };
   merged.shopping.shopFilter = normalizeShopFilter(merged.shopping.shopFilter);
   return merged;

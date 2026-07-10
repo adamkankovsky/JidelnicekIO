@@ -82,7 +82,7 @@ interface LocalDataContextValue {
   dailyShopping: AppLocalState['dailyShopping'];
   setSkippedDays: (days: string[]) => void;
   setSkippedBakeryDays: (days: string[]) => void;
-  setBakeryDaysForDay: (dayId: string, days: 2 | 3) => void;
+  setBakeryDaysForDay: (dayId: string, days: 1 | 2 | 3) => void;
 }
 
 const LocalDataContext = createContext<LocalDataContextValue | null>(null);
@@ -355,7 +355,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
   );
 
   const setBakeryDaysForDay = useCallback(
-    (dayId: string, days: 2 | 3) => {
+    (dayId: string, days: 1 | 2 | 3) => {
       updateState((current) => ({
         ...current,
         dailyShopping: {

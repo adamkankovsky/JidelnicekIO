@@ -188,11 +188,13 @@ export function resolveMergeChain(
   return mergeMap;
 }
 
+export type BakeryWindowDays = 1 | 2 | 3;
+
 export interface AllDaysShoppingConfig {
   skippedDays: string[];
   skippedBakeryDays: string[];
   /** Per-day bakery window size; missing key = default 2 */
-  bakeryDaysPerDay: Record<string, 2 | 3>;
+  bakeryDaysPerDay: Record<string, BakeryWindowDays>;
   scaledConfig: ScaledMealConfig;
 }
 

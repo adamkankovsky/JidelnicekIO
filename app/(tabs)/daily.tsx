@@ -8,6 +8,7 @@ import {
   getMealPlanDays,
   type AggregatedItem,
   type BakerySection,
+  type BakeryWindowDays,
   type DailyShoppingSection,
   type DayShoppingResult,
 } from '@/utils/dailyShopping';
@@ -56,12 +57,14 @@ function DayCard({
   result,
   mergedDayNames,
   bakeryDays,
+  bakerySkipped,
   onSetBakeryDays,
 }: {
   result: DayShoppingResult;
   mergedDayNames: string[];
-  bakeryDays: 2 | 3;
-  onSetBakeryDays: (days: 2 | 3) => void;
+  bakeryDays: BakeryWindowDays;
+  bakerySkipped: boolean;
+  onSetBakeryDays: (days: BakeryWindowDays) => void;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const totalItems =
@@ -97,10 +100,13 @@ function DayCard({
           {result.bakery ? (
             <BakeryBlock
               bakery={result.bakery}
-              dayId={result.dayId}
               currentDays={bakeryDays}
               onSetDays={onSetBakeryDays}
             />
+          ) : bakerySkipped ? (
+            <View className="mt-2 rounded-xl border border-dashed border-amber-300 bg-amber-50/50 px-4 py-3">
+              <Text className="text-xs text-amber-700">Pečivo přeskočeno — sloučeno s předchozím nákupem</Text>
+            </View>
           ) : null}
           {/* Other perishables */}
           {result.sections.map((section) => (
@@ -119,14 +125,12 @@ function DayCard({
 
 function BakeryBlock({
   bakery,
-  dayId,
   currentDays,
   onSetDays,
 }: {
   bakery: BakerySection;
-  dayId: string;
-  currentDays: 2 | 3;
-  onSetDays: (days: 2 | 3) => void;
+  currentDays: BakeryWindowDays;
+  onSetDays: (days: BakeryWindowDays) => void;
 }) {
   return (
     <View className="mt-2">
@@ -135,6 +139,11 @@ function BakeryBlock({
           Pečivo ({bakery.coversDates.join(' – ')})
         </Text>
         <View className="flex-row gap-1">
+          <Pressable
+            onPress={() => onSetDays(1)}
+            className={`rounded px-2 py-0.5 ${currentDays === 1 ? 'bg-amber-600' : 'bg-amber-200'}`}>
+            <Text className={`text-xs ${currentDays === 1 ? 'font-bold text-white' : 'text-amber-800'}`}>1d</Text>
+          </Pressable>
           <Pressable
             onPress={() => onSetDays(2)}
             className={`rounded px-2 py-0.5 ${currentDays === 2 ? 'bg-amber-600' : 'bg-amber-200'}`}>
@@ -181,27 +190,51 @@ function BakeryBlock({
 }
 
 function SkippedDayCard({
-  dayId,
   date,
   dayName,
-  onToggleSkip,
+  perishableSkipped,
+  bakerySkipped,
+  onRestorePerishables,
+  onRestoreBakery,
 }: {
-  dayId: string;
   date: string;
   dayName: string;
-  onToggleSkip: () => void;
+  perishableSkipped: boolean;
+  bakerySkipped: boolean;
+  onRestorePerishables: () => void;
+  onRestoreBakery: () => void;
 }) {
   return (
     <View className="mb-2 overflow-hidden rounded-xl border border-dashed border-camp-accent bg-camp-accent/20">
       <View className="flex-row items-center justify-between px-4 py-2.5">
-        <Text className="text-sm text-camp-muted line-through">
-          {date} {dayName}
-        </Text>
-        <Pressable
-          onPress={onToggleSkip}
-          className="rounded-lg border border-camp-accent bg-white px-3 py-1">
-          <Text className="text-xs text-camp-text">Obnovit</Text>
-        </Pressable>
+        <View className="flex-1">
+          <Text className={`text-sm text-camp-muted ${perishableSkipped ? 'line-through' : ''}`}>
+            {date} {dayName}
+          </Text>
+          <Text className="text-xs text-camp-muted">
+            {perishableSkipped && bakerySkipped
+              ? 'suroviny i pečivo přeskočeny'
+              : perishableSkipped
+                ? 'suroviny přeskočeny'
+                : 'pečivo přeskočeno'}
+          </Text>
+        </View>
+        <View className="flex-row gap-2">
+          {perishableSkipped ? (
+            <Pressable
+              onPress={onRestorePerishables}
+              className="rounded-lg border border-camp-accent bg-white px-3 py-1">
+              <Text className="text-xs text-camp-text">Obnovit suroviny</Text>
+            </Pressable>
+          ) : null}
+          {bakerySkipped ? (
+            <Pressable
+              onPress={onRestoreBakery}
+              className="rounded-lg border border-amber-300 bg-white px-3 py-1">
+              <Text className="text-xs text-amber-700">Obnovit pečivo</Text>
+            </Pressable>
+          ) : null}
+        </View>
       </View>
     </View>
   );
@@ -267,18 +300,17 @@ export default function DailyShoppingScreen() {
           const isPerishableSkipped = skippedSet.has(day.id);
           const isBakerySkipped = skippedBakerySet.has(day.id);
 
-          // Fully skipped (both perishable and bakery)
+          // Both skipped — compact card with separate restore buttons
           if (isPerishableSkipped && isBakerySkipped) {
             return (
               <SkippedDayCard
                 key={day.id}
-                dayId={day.id}
                 date={day.date}
                 dayName={day.dayName}
-                onToggleSkip={() => {
-                  toggleSkip(day.id);
-                  toggleBakerySkip(day.id);
-                }}
+                perishableSkipped
+                bakerySkipped
+                onRestorePerishables={() => toggleSkip(day.id)}
+                onRestoreBakery={() => toggleBakerySkip(day.id)}
               />
             );
           }
@@ -286,21 +318,15 @@ export default function DailyShoppingScreen() {
           // Only perishable skipped
           if (isPerishableSkipped) {
             return (
-              <View key={day.id} className="mb-2 overflow-hidden rounded-xl border border-dashed border-camp-accent bg-camp-accent/20">
-                <View className="flex-row items-center justify-between px-4 py-2.5">
-                  <View>
-                    <Text className="text-sm text-camp-muted line-through">
-                      {day.date} {day.dayName}
-                    </Text>
-                    <Text className="text-xs text-camp-muted">suroviny přeskočeny</Text>
-                  </View>
-                  <Pressable
-                    onPress={() => toggleSkip(day.id)}
-                    className="rounded-lg border border-camp-accent bg-white px-3 py-1">
-                    <Text className="text-xs text-camp-text">Obnovit suroviny</Text>
-                  </Pressable>
-                </View>
-              </View>
+              <SkippedDayCard
+                key={day.id}
+                date={day.date}
+                dayName={day.dayName}
+                perishableSkipped
+                bakerySkipped={isBakerySkipped}
+                onRestorePerishables={() => toggleSkip(day.id)}
+                onRestoreBakery={() => toggleBakerySkip(day.id)}
+              />
             );
           }
 
@@ -318,11 +344,17 @@ export default function DailyShoppingScreen() {
                 result={result}
                 mergedDayNames={mergedDayNames}
                 bakeryDays={dailyShopping.bakeryDaysPerDay[day.id] ?? 2}
+                bakerySkipped={isBakerySkipped}
                 onSetBakeryDays={(days) => setBakeryDaysForDay(day.id, days)}
               />
-              {/* Skip buttons */}
               <View className="-mt-2 mb-3 flex-row justify-end gap-2 pr-2">
-                {result.bakery ? (
+                {isBakerySkipped ? (
+                  <Pressable
+                    onPress={() => toggleBakerySkip(day.id)}
+                    className="rounded-lg border border-amber-300 bg-white px-3 py-1">
+                    <Text className="text-xs text-amber-700">Obnovit pečivo</Text>
+                  </Pressable>
+                ) : result.bakery ? (
                   <Pressable
                     onPress={() => toggleBakerySkip(day.id)}
                     className="rounded-lg border border-amber-300 bg-white px-3 py-1">
