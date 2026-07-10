@@ -1,11 +1,14 @@
 export type MealType = 'snidane' | 'svacina' | 'obed' | 'vecere';
 
+export type PerishableCategory = 'meat' | 'dairy' | 'vegetable' | 'fruit' | 'bakery';
+
 export interface Ingredient {
   name: string;
   quantity: number | null;
   unit: string;
   note?: string | null;
   checkGlutenFree?: boolean;
+  perishable?: PerishableCategory;
 }
 
 export interface Meal {

@@ -41,6 +41,19 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="daily"
+        options={{
+          title: 'Denní nákup',
+          tabBarIcon: ({ color }) => (
+            <SymbolView
+              name={{ ios: 'bag.fill', android: 'local_grocery_store', web: 'local_grocery_store' }}
+              tintColor={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Nastavení',
