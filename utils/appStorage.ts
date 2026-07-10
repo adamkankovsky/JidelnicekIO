@@ -28,6 +28,12 @@ export interface PromoPeriodFilter {
   to: string;
 }
 
+export interface DailyShoppingState {
+  skippedDays: string[];
+  bakeryDays: 2 | 3;
+  includeBakery: boolean;
+}
+
 export interface AppLocalState {
   version: number;
   savedAt: string;
@@ -43,6 +49,7 @@ export interface AppLocalState {
     mealDinersOverrides: MealDinersOverrides;
     overrides: OverridesMap;
   };
+  dailyShopping: DailyShoppingState;
 }
 
 export function createDefaultState(): AppLocalState {
@@ -61,6 +68,11 @@ export function createDefaultState(): AppLocalState {
       mealDinersOverrides: {},
       overrides: {},
     },
+    dailyShopping: {
+      skippedDays: [],
+      bakeryDays: 2,
+      includeBakery: true,
+    },
   };
 }
 
@@ -77,6 +89,7 @@ function mergeState(base: AppLocalState, patch: Partial<AppLocalState>): AppLoca
     shopping: { ...base.shopping, ...patch.shopping },
     purchases: { ...base.purchases, ...patch.purchases },
     diners: { ...base.diners, ...patch.diners },
+    dailyShopping: { ...base.dailyShopping, ...patch.dailyShopping },
   };
   merged.shopping.shopFilter = normalizeShopFilter(merged.shopping.shopFilter);
   return merged;

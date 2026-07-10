@@ -2,13 +2,13 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useDiners } from '@/context/DinersContext';
+import { useDailyShopping } from '@/context/LocalDataContext';
 import {
-  formatDailyDate,
-  getDailyFreshIngredients,
-  getTomorrowIso,
+  getAllDaysShopping,
+  getMealPlanDays,
   type AggregatedItem,
   type DailyShoppingSection,
+  type DayShoppingResult,
 } from '@/utils/dailyShopping';
 
 function ItemRow({ item }: { item: AggregatedItem }) {
@@ -18,10 +18,10 @@ function ItemRow({ item }: { item: AggregatedItem }) {
       : '';
 
   return (
-    <View className="border-b border-camp-accent/40 bg-white px-4 py-3">
+    <View className="border-b border-camp-accent/40 bg-white px-4 py-2.5">
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
-          <Text className="text-base font-medium text-camp-text">{item.name}</Text>
+          <Text className="text-sm font-medium text-camp-text">{item.name}</Text>
           {item.sources.length > 0 ? (
             <Text className="mt-0.5 text-xs text-camp-muted">
               {item.sources.join(' · ')}
@@ -38,142 +38,245 @@ function ItemRow({ item }: { item: AggregatedItem }) {
 
 function SectionBlock({ section }: { section: DailyShoppingSection }) {
   return (
-    <View className="mb-4 overflow-hidden rounded-2xl border border-camp-accent">
-      <View className="bg-camp-primary px-4 py-3">
-        <Text className="text-sm font-bold uppercase tracking-wide text-white">
-          {section.label}
-        </Text>
+    <View className="mt-2">
+      <Text className="mb-1 px-1 text-xs font-bold uppercase tracking-wide text-camp-muted">
+        {section.label}
+      </Text>
+      <View className="overflow-hidden rounded-xl border border-camp-accent/60">
+        {section.items.map((item, i) => (
+          <ItemRow key={`${item.name}-${i}`} item={item} />
+        ))}
       </View>
-      {section.items.map((item, i) => (
-        <ItemRow key={`${item.name}-${i}`} item={item} />
-      ))}
+    </View>
+  );
+}
+
+function DayCard({
+  result,
+  isSkipped,
+  onToggleSkip,
+  mergedDayNames,
+}: {
+  result: DayShoppingResult;
+  isSkipped: boolean;
+  onToggleSkip: () => void;
+  mergedDayNames: string[];
+}) {
+  const [collapsed, setCollapsed] = useState(false);
+  const totalItems = result.sections.reduce((sum, s) => sum + s.items.length, 0);
+
+  return (
+    <View className="mb-4 overflow-hidden rounded-2xl border border-camp-accent bg-white">
+      {/* Header */}
+      <Pressable
+        onPress={() => setCollapsed(!collapsed)}
+        className="flex-row items-center justify-between bg-camp-primary/5 px-4 py-3">
+        <View className="flex-1">
+          <Text className="text-base font-bold text-camp-text">
+            {result.date} {result.dayName}
+          </Text>
+          {mergedDayNames.length > 0 ? (
+            <Text className="mt-0.5 text-xs text-camp-warm">
+              + {mergedDayNames.join(', ')}
+            </Text>
+          ) : null}
+          <Text className="mt-0.5 text-xs text-camp-muted">
+            {totalItems} položek
+          </Text>
+        </View>
+        <Text className="text-lg text-camp-muted">{collapsed ? '▸' : '▾'}</Text>
+      </Pressable>
+
+      {/* Content */}
+      {!collapsed ? (
+        <View className="px-3 pb-3">
+          {result.sections.map((section) => (
+            <SectionBlock key={section.category} section={section} />
+          ))}
+          {totalItems === 0 ? (
+            <Text className="py-4 text-center text-sm text-camp-muted">
+              Žádné čerstvé suroviny pro tento den.
+            </Text>
+          ) : null}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function SkippedDayCard({
+  dayId,
+  date,
+  dayName,
+  onToggleSkip,
+}: {
+  dayId: string;
+  date: string;
+  dayName: string;
+  onToggleSkip: () => void;
+}) {
+  return (
+    <View className="mb-2 overflow-hidden rounded-xl border border-dashed border-camp-accent bg-camp-accent/20">
+      <View className="flex-row items-center justify-between px-4 py-2.5">
+        <Text className="text-sm text-camp-muted line-through">
+          {date} {dayName}
+        </Text>
+        <Pressable
+          onPress={onToggleSkip}
+          className="rounded-lg border border-camp-accent bg-white px-3 py-1">
+          <Text className="text-xs text-camp-text">Obnovit</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 export default function DailyShoppingScreen() {
-  const { coefficient, mealDinersOverrides, overrides } = useDiners();
-  const [bakeryDays, setBakeryDays] = useState<2 | 3>(2);
-  const [includeBakery, setIncludeBakery] = useState(true);
+  const {
+    dailyShopping,
+    setSkippedDays,
+    setBakeryDays,
+    setIncludeBakery,
+    coefficient,
+    mealDinersOverrides,
+    overrides,
+  } = useDailyShopping();
 
-  const targetDate = useMemo(() => getTomorrowIso(), []);
+  const allDays = useMemo(() => getMealPlanDays(), []);
 
-  const shoppingList = useMemo(
+  const shoppingResults = useMemo(
     () =>
-      getDailyFreshIngredients(targetDate, bakeryDays, {
-        coefficient,
-        mealDinersOverrides,
-        overrides,
+      getAllDaysShopping({
+        skippedDays: dailyShopping.skippedDays,
+        bakeryDays: dailyShopping.bakeryDays,
+        includeBakery: dailyShopping.includeBakery,
+        scaledConfig: { coefficient, mealDinersOverrides, overrides },
       }),
-    [targetDate, bakeryDays, coefficient, mealDinersOverrides, overrides],
+    [dailyShopping, coefficient, mealDinersOverrides, overrides],
   );
 
-  const displaySections = useMemo(() => {
-    if (includeBakery) return shoppingList.sections;
-    return shoppingList.sections.filter((s) => s.category !== 'bakery');
-  }, [shoppingList.sections, includeBakery]);
+  const skippedSet = useMemo(() => new Set(dailyShopping.skippedDays), [dailyShopping.skippedDays]);
+  const resultByDayId = useMemo(
+    () => new Map(shoppingResults.map((r) => [r.dayId, r])),
+    [shoppingResults],
+  );
 
-  const hasDayData = shoppingList.campDayId !== null;
-  const totalItems = displaySections.reduce((sum, s) => sum + s.items.length, 0);
+  const toggleSkip = (dayId: string) => {
+    if (skippedSet.has(dayId)) {
+      setSkippedDays(dailyShopping.skippedDays.filter((d) => d !== dayId));
+    } else {
+      setSkippedDays([...dailyShopping.skippedDays, dayId]);
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-camp-bg" edges={['bottom']}>
       <ScrollView className="flex-1" contentContainerClassName="px-4 pb-8 pt-4">
-        <Text className="mb-1 text-2xl font-bold text-camp-primary">Denní nákup</Text>
+        <Text className="mb-1 text-2xl font-bold text-camp-primary">Denní nákupy</Text>
         <Text className="mb-4 text-sm text-camp-muted">
-          Čerstvé suroviny k nakoupení na zítřejší den.
+          Čerstvé suroviny po dnech. Přeskoč den a spojí se s předchozím.
         </Text>
 
-        {/* Date header */}
+        {/* Bakery controls */}
         <View className="mb-5 rounded-2xl border border-camp-accent bg-white p-4">
-          <Text className="text-lg font-bold text-camp-text">
-            {formatDailyDate(targetDate)} {shoppingList.dayName}
-          </Text>
-          {hasDayData ? (
-            <Text className="mt-1 text-sm text-camp-muted">
-              {totalItems} položek k nakoupení
-            </Text>
-          ) : (
-            <Text className="mt-1 text-sm text-camp-warm">
-              Žádný den v jídelníčku neodpovídá zítřejšímu datu.
-            </Text>
-          )}
+          <View className="flex-row items-center justify-between">
+            <Text className="text-sm font-bold text-camp-text">Pečivo</Text>
+            <Pressable
+              onPress={() => setIncludeBakery(!dailyShopping.includeBakery)}
+              className={`rounded-lg border px-3 py-1.5 ${
+                dailyShopping.includeBakery
+                  ? 'border-camp-primary bg-camp-primary'
+                  : 'border-camp-accent bg-white'
+              }`}>
+              <Text
+                className={`text-sm ${
+                  dailyShopping.includeBakery ? 'font-semibold text-white' : 'text-camp-text'
+                }`}>
+                {dailyShopping.includeBakery ? 'Zahrnout' : 'Přeskočit'}
+              </Text>
+            </Pressable>
+          </View>
+
+          {dailyShopping.includeBakery ? (
+            <View className="mt-3">
+              <Text className="mb-2 text-xs text-camp-muted">Nakoupit pečivo na:</Text>
+              <View className="flex-row gap-2">
+                <Pressable
+                  onPress={() => setBakeryDays(2)}
+                  className={`flex-1 rounded-lg border py-2 ${
+                    dailyShopping.bakeryDays === 2
+                      ? 'border-camp-primary bg-camp-primary'
+                      : 'border-camp-accent bg-white'
+                  }`}>
+                  <Text
+                    className={`text-center text-sm ${
+                      dailyShopping.bakeryDays === 2 ? 'font-semibold text-white' : 'text-camp-text'
+                    }`}>
+                    2 dny
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setBakeryDays(3)}
+                  className={`flex-1 rounded-lg border py-2 ${
+                    dailyShopping.bakeryDays === 3
+                      ? 'border-camp-primary bg-camp-primary'
+                      : 'border-camp-accent bg-white'
+                  }`}>
+                  <Text
+                    className={`text-center text-sm ${
+                      dailyShopping.bakeryDays === 3 ? 'font-semibold text-white' : 'text-camp-text'
+                    }`}>
+                    3 dny
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          ) : null}
         </View>
 
-        {/* Bakery controls */}
-        {hasDayData ? (
-          <View className="mb-5 rounded-2xl border border-camp-accent bg-white p-4">
-            <View className="flex-row items-center justify-between">
-              <Text className="text-sm font-bold text-camp-text">Pečivo</Text>
-              <Pressable
-                onPress={() => setIncludeBakery(!includeBakery)}
-                className={`rounded-lg border px-3 py-1.5 ${
-                  includeBakery
-                    ? 'border-camp-primary bg-camp-primary'
-                    : 'border-camp-accent bg-white'
-                }`}>
-                <Text
-                  className={`text-sm ${
-                    includeBakery ? 'font-semibold text-white' : 'text-camp-text'
-                  }`}>
-                  {includeBakery ? 'Nakoupit' : 'Přeskočit'}
-                </Text>
-              </Pressable>
-            </View>
+        {/* Day list */}
+        {allDays.map((day) => {
+          const isSkipped = skippedSet.has(day.id);
 
-            {includeBakery ? (
-              <View className="mt-3">
-                <Text className="mb-2 text-xs text-camp-muted">Nakoupit pečivo na:</Text>
-                <View className="flex-row gap-2">
-                  <Pressable
-                    onPress={() => setBakeryDays(2)}
-                    className={`flex-1 rounded-lg border py-2 ${
-                      bakeryDays === 2
-                        ? 'border-camp-primary bg-camp-primary'
-                        : 'border-camp-accent bg-white'
-                    }`}>
-                    <Text
-                      className={`text-center text-sm ${
-                        bakeryDays === 2 ? 'font-semibold text-white' : 'text-camp-text'
-                      }`}>
-                      2 dny
-                    </Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => setBakeryDays(3)}
-                    className={`flex-1 rounded-lg border py-2 ${
-                      bakeryDays === 3
-                        ? 'border-camp-primary bg-camp-primary'
-                        : 'border-camp-accent bg-white'
-                    }`}>
-                    <Text
-                      className={`text-center text-sm ${
-                        bakeryDays === 3 ? 'font-semibold text-white' : 'text-camp-text'
-                      }`}>
-                      3 dny
-                    </Text>
-                  </Pressable>
-                </View>
+          if (isSkipped) {
+            return (
+              <SkippedDayCard
+                key={day.id}
+                dayId={day.id}
+                date={day.date}
+                dayName={day.dayName}
+                onToggleSkip={() => toggleSkip(day.id)}
+              />
+            );
+          }
+
+          const result = resultByDayId.get(day.id);
+          if (!result) return null;
+
+          const mergedDayNames = result.mergedFromDayIds.map((mid) => {
+            const d = allDays.find((x) => x.id === mid);
+            return d ? `${d.date} ${d.dayName}` : mid;
+          });
+
+          return (
+            <View key={day.id}>
+              <DayCard
+                result={result}
+                isSkipped={false}
+                onToggleSkip={() => toggleSkip(day.id)}
+                mergedDayNames={mergedDayNames}
+              />
+              {/* Skip button below the card */}
+              <View className="-mt-2 mb-3 flex-row justify-end pr-2">
+                <Pressable
+                  onPress={() => toggleSkip(day.id)}
+                  className="rounded-lg border border-camp-accent bg-white px-3 py-1">
+                  <Text className="text-xs text-camp-muted">Přeskočit den</Text>
+                </Pressable>
               </View>
-            ) : null}
-          </View>
-        ) : null}
-
-        {/* Sections */}
-        {displaySections.map((section) => (
-          <SectionBlock key={section.category} section={section} />
-        ))}
-
-        {hasDayData && totalItems === 0 ? (
-          <View className="items-center rounded-2xl border border-camp-accent bg-white p-6">
-            <Text className="text-lg font-semibold text-camp-primary">
-              Žádné čerstvé suroviny
-            </Text>
-            <Text className="mt-1 text-center text-sm text-camp-muted">
-              Na zítřejší den nejsou potřeba žádné méně trvanlivé ingredience.
-            </Text>
-          </View>
-        ) : null}
+            </View>
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );

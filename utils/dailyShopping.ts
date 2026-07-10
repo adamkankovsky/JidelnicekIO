@@ -1,4 +1,4 @@
-import type { CampDay, Ingredient, Meal, PerishableCategory } from '@/data/types';
+import type { CampDay, PerishableCategory } from '@/data/types';
 import { MEAL_PLAN } from '@/data/mealPlan';
 import { MEAL_TYPE_LABELS } from '@/data/types';
 import { getScaledMealIngredients, type ScaledMealConfig } from '@/utils/scaledMealIngredients';
@@ -9,6 +9,7 @@ export interface DailyIngredientItem {
   unit: string;
   mealLabel: string;
   mealType: string;
+  fromDayId?: string;
 }
 
 export interface AggregatedItem {
@@ -24,13 +25,13 @@ export interface DailyShoppingSection {
   items: AggregatedItem[];
 }
 
-export interface DailyShoppingList {
-  targetDate: string;
+export interface DayShoppingResult {
+  dayId: string;
+  date: string;
   dayName: string;
-  campDayId: string | null;
   sections: DailyShoppingSection[];
-  bakeryDays: number;
-  bakeryDayIds: string[];
+  /** IDs of days whose ingredients have been merged into this one */
+  mergedFromDayIds: string[];
 }
 
 const CATEGORY_LABELS: Record<PerishableCategory, string> = {
@@ -42,47 +43,6 @@ const CATEGORY_LABELS: Record<PerishableCategory, string> = {
 };
 
 const CATEGORY_ORDER: PerishableCategory[] = ['meat', 'dairy', 'vegetable', 'fruit', 'bakery'];
-
-function parseMealPlanDate(dateStr: string, year: number): string {
-  const match = dateStr.match(/(\d{1,2})\.(\d{1,2})\./);
-  if (!match) return '';
-  const day = parseInt(match[1], 10);
-  const month = parseInt(match[2], 10);
-  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-}
-
-function getMealPlanYear(): number {
-  if (MEAL_PLAN.length === 0) return new Date().getFullYear();
-  const firstDate = MEAL_PLAN[0].date;
-  const now = new Date();
-  const testIso = parseMealPlanDate(firstDate, now.getFullYear());
-  if (testIso) return now.getFullYear();
-  return now.getFullYear();
-}
-
-export function findDayByDate(isoDate: string): CampDay | null {
-  const year = getMealPlanYear();
-  for (const day of MEAL_PLAN) {
-    const dayIso = parseMealPlanDate(day.date, year);
-    if (dayIso === isoDate) return day;
-  }
-  return null;
-}
-
-export function findDayIndex(isoDate: string): number {
-  const year = getMealPlanYear();
-  return MEAL_PLAN.findIndex((day) => parseMealPlanDate(day.date, year) === isoDate);
-}
-
-function getConsecutiveDays(startDate: string, count: number): CampDay[] {
-  const startIdx = findDayIndex(startDate);
-  if (startIdx === -1) return [];
-  const days: CampDay[] = [];
-  for (let i = 0; i < count && startIdx + i < MEAL_PLAN.length; i++) {
-    days.push(MEAL_PLAN[startIdx + i]);
-  }
-  return days;
-}
 
 function extractPerishableIngredients(
   day: CampDay,
@@ -105,6 +65,7 @@ function extractPerishableIngredients(
         unit: ing.unit,
         mealLabel: meal.label || MEAL_TYPE_LABELS[meal.type],
         mealType: MEAL_TYPE_LABELS[meal.type],
+        fromDayId: day.id,
       });
     }
   }
@@ -132,12 +93,9 @@ function aggregateItems(items: DailyIngredientItem[]): AggregatedItem[] {
   const result: AggregatedItem[] = [];
   for (const [, group] of groups) {
     const allHaveQuantity = group.items.every((i) => i.quantity != null);
-    const sameUnit = group.items.every((i) => i.unit === group.unit);
 
     let totalQuantity: number | null = null;
-    if (allHaveQuantity && sameUnit) {
-      totalQuantity = group.items.reduce((sum, i) => sum + (i.quantity ?? 0), 0);
-    } else if (allHaveQuantity) {
+    if (allHaveQuantity) {
       totalQuantity = group.items.reduce((sum, i) => sum + (i.quantity ?? 0), 0);
     }
 
@@ -154,59 +112,138 @@ function aggregateItems(items: DailyIngredientItem[]): AggregatedItem[] {
   return result;
 }
 
-export function getTomorrowIso(): string {
-  const now = new Date();
-  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-  return tomorrow.toISOString().slice(0, 10);
-}
+/**
+ * Given a list of skipped day IDs, resolve the chain merge.
+ * Returns a map: target day ID -> array of day IDs merged into it.
+ * Skipped days chain backwards: if day-2 and day-3 are skipped,
+ * day-2 merges into day-1, and day-3 also merges into day-1.
+ */
+export function resolveMergeChain(
+  allDayIds: string[],
+  skippedDayIds: Set<string>,
+): Map<string, string[]> {
+  const mergeMap = new Map<string, string[]>();
 
-export function formatDailyDate(isoDate: string): string {
-  const [, month, day] = isoDate.split('-');
-  return `${parseInt(day, 10)}.${parseInt(month, 10)}.`;
-}
+  for (const dayId of allDayIds) {
+    if (!skippedDayIds.has(dayId)) {
+      mergeMap.set(dayId, []);
+    }
+  }
 
-export function getDailyFreshIngredients(
-  targetDate: string,
-  bakeryDays: 2 | 3,
-  config: ScaledMealConfig,
-): DailyShoppingList {
-  const targetDay = findDayByDate(targetDate);
-  const bakeryStartDays = getConsecutiveDays(targetDate, bakeryDays);
+  for (let i = 0; i < allDayIds.length; i++) {
+    const dayId = allDayIds[i];
+    if (!skippedDayIds.has(dayId)) continue;
 
-  const sections: DailyShoppingSection[] = [];
+    // Walk backwards to find the nearest non-skipped day
+    let targetIdx = i - 1;
+    while (targetIdx >= 0 && skippedDayIds.has(allDayIds[targetIdx])) {
+      targetIdx--;
+    }
 
-  for (const category of CATEGORY_ORDER) {
-    if (category === 'bakery') {
-      const allBakeryItems: DailyIngredientItem[] = [];
-      for (const day of bakeryStartDays) {
-        allBakeryItems.push(...extractPerishableIngredients(day, config, 'bakery'));
-      }
-      if (allBakeryItems.length > 0) {
-        sections.push({
-          category: 'bakery',
-          label: CATEGORY_LABELS.bakery,
-          items: aggregateItems(allBakeryItems),
-        });
-      }
+    if (targetIdx >= 0) {
+      const targetId = allDayIds[targetIdx];
+      const existing = mergeMap.get(targetId) ?? [];
+      existing.push(dayId);
+      mergeMap.set(targetId, existing);
     } else {
-      if (!targetDay) continue;
-      const items = extractPerishableIngredients(targetDay, config, category);
-      if (items.length > 0) {
-        sections.push({
-          category,
-          label: CATEGORY_LABELS[category],
-          items: aggregateItems(items),
-        });
+      // No previous non-skipped day exists; find next non-skipped day forward
+      let fwdIdx = i + 1;
+      while (fwdIdx < allDayIds.length && skippedDayIds.has(allDayIds[fwdIdx])) {
+        fwdIdx++;
+      }
+      if (fwdIdx < allDayIds.length) {
+        const targetId = allDayIds[fwdIdx];
+        const existing = mergeMap.get(targetId) ?? [];
+        existing.push(dayId);
+        mergeMap.set(targetId, existing);
       }
     }
   }
 
-  return {
-    targetDate,
-    dayName: targetDay?.dayName ?? '',
-    campDayId: targetDay?.id ?? null,
-    sections,
-    bakeryDays,
-    bakeryDayIds: bakeryStartDays.map((d) => d.id),
-  };
+  return mergeMap;
+}
+
+export interface AllDaysShoppingConfig {
+  skippedDays: string[];
+  bakeryDays: 2 | 3;
+  includeBakery: boolean;
+  scaledConfig: ScaledMealConfig;
+}
+
+/**
+ * Build shopping lists for all days in the meal plan, accounting for
+ * skipped days (chaining merge) and bakery multi-day windows.
+ */
+export function getAllDaysShopping(config: AllDaysShoppingConfig): DayShoppingResult[] {
+  const allDayIds = MEAL_PLAN.map((d) => d.id);
+  const skippedSet = new Set(config.skippedDays);
+  const mergeMap = resolveMergeChain(allDayIds, skippedSet);
+  const dayById = new Map(MEAL_PLAN.map((d) => [d.id, d]));
+
+  const results: DayShoppingResult[] = [];
+
+  for (const [targetDayId, mergedDayIds] of mergeMap) {
+    const targetDay = dayById.get(targetDayId)!;
+    const allSourceDays = [targetDay, ...mergedDayIds.map((id) => dayById.get(id)!).filter(Boolean)];
+
+    const sections: DailyShoppingSection[] = [];
+
+    for (const category of CATEGORY_ORDER) {
+      if (category === 'bakery') {
+        if (!config.includeBakery) continue;
+
+        // For bakery, use a window starting from this day
+        const targetIdx = allDayIds.indexOf(targetDayId);
+        const bakeryDayIds: string[] = [];
+        for (let i = 0; i < config.bakeryDays && targetIdx + i < allDayIds.length; i++) {
+          bakeryDayIds.push(allDayIds[targetIdx + i]);
+        }
+        // Also include merged days not already covered
+        for (const mid of mergedDayIds) {
+          if (!bakeryDayIds.includes(mid)) bakeryDayIds.push(mid);
+        }
+
+        const allBakeryItems: DailyIngredientItem[] = [];
+        for (const bid of bakeryDayIds) {
+          const day = dayById.get(bid);
+          if (day) {
+            allBakeryItems.push(...extractPerishableIngredients(day, config.scaledConfig, 'bakery'));
+          }
+        }
+        if (allBakeryItems.length > 0) {
+          sections.push({
+            category: 'bakery',
+            label: CATEGORY_LABELS.bakery,
+            items: aggregateItems(allBakeryItems),
+          });
+        }
+      } else {
+        const allItems: DailyIngredientItem[] = [];
+        for (const day of allSourceDays) {
+          allItems.push(...extractPerishableIngredients(day, config.scaledConfig, category));
+        }
+        if (allItems.length > 0) {
+          sections.push({
+            category,
+            label: CATEGORY_LABELS[category],
+            items: aggregateItems(allItems),
+          });
+        }
+      }
+    }
+
+    results.push({
+      dayId: targetDayId,
+      date: targetDay.date,
+      dayName: targetDay.dayName,
+      sections,
+      mergedFromDayIds: mergedDayIds,
+    });
+  }
+
+  return results;
+}
+
+export function getMealPlanDays(): { id: string; date: string; dayName: string }[] {
+  return MEAL_PLAN.map((d) => ({ id: d.id, date: d.date, dayName: d.dayName }));
 }

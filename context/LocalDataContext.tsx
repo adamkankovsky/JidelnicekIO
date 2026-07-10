@@ -78,6 +78,11 @@ interface LocalDataContextValue {
   getPurchase: (key: string) => ActualPurchase | undefined;
   clearAllPurchases: () => void;
   totalSpent: number;
+  // daily shopping
+  dailyShopping: AppLocalState['dailyShopping'];
+  setSkippedDays: (days: string[]) => void;
+  setBakeryDays: (days: 2 | 3) => void;
+  setIncludeBakery: (value: boolean) => void;
 }
 
 const LocalDataContext = createContext<LocalDataContextValue | null>(null);
@@ -329,6 +334,36 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
     [state.shopping.checked],
   );
 
+  const setSkippedDays = useCallback(
+    (days: string[]) => {
+      updateState((current) => ({
+        ...current,
+        dailyShopping: { ...current.dailyShopping, skippedDays: days },
+      }));
+    },
+    [updateState],
+  );
+
+  const setBakeryDays = useCallback(
+    (days: 2 | 3) => {
+      updateState((current) => ({
+        ...current,
+        dailyShopping: { ...current.dailyShopping, bakeryDays: days },
+      }));
+    },
+    [updateState],
+  );
+
+  const setIncludeBakery = useCallback(
+    (value: boolean) => {
+      updateState((current) => ({
+        ...current,
+        dailyShopping: { ...current.dailyShopping, includeBakery: value },
+      }));
+    },
+    [updateState],
+  );
+
   const totalSpent = useMemo(() => {
     let sum = 0;
     for (const category of INGREDIENT_CATEGORIES) {
@@ -385,6 +420,10 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       getPurchase,
       clearAllPurchases,
       totalSpent,
+      dailyShopping: state.dailyShopping,
+      setSkippedDays,
+      setBakeryDays,
+      setIncludeBakery,
     }),
     [
       isHydrated,
@@ -411,6 +450,9 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       getPurchase,
       clearAllPurchases,
       totalSpent,
+      setSkippedDays,
+      setBakeryDays,
+      setIncludeBakery,
     ],
   );
 
@@ -481,6 +523,20 @@ export function usePurchases() {
     getPurchase: ctx.getPurchase,
     clearAll: ctx.clearAllPurchases,
     totalSpent: ctx.totalSpent,
+  };
+}
+
+export function useDailyShopping() {
+  const ctx = useLocalData();
+  return {
+    dailyShopping: ctx.dailyShopping,
+    isLoading: !ctx.isHydrated,
+    setSkippedDays: ctx.setSkippedDays,
+    setBakeryDays: ctx.setBakeryDays,
+    setIncludeBakery: ctx.setIncludeBakery,
+    coefficient: ctx.coefficient,
+    mealDinersOverrides: ctx.mealDinersOverrides,
+    overrides: ctx.overrides,
   };
 }
 
