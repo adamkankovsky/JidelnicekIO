@@ -71,6 +71,7 @@ function RootLayoutNav() {
             headerTintColor: '#2D6A4F',
           }}
         />
+        <Stack.Screen name="mladsitabor" options={{ headerShown: false }} />
       </Stack>
     </ThemeProvider>
   );

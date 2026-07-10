@@ -1,5 +1,4 @@
 import type { CampDay, PerishableCategory } from '@/data/types';
-import { MEAL_PLAN } from '@/data/mealPlan';
 import { MEAL_TYPE_LABELS } from '@/data/types';
 import { getScaledMealIngredients, type ScaledMealConfig } from '@/utils/scaledMealIngredients';
 
@@ -206,9 +205,9 @@ export interface AllDaysShoppingConfig {
  * (where N is that day's bakeryDays setting), then the next bakery
  * purchase starts after that window ends.
  */
-export function getAllDaysShopping(config: AllDaysShoppingConfig): DayShoppingResult[] {
-  const allDayIds = MEAL_PLAN.map((d) => d.id);
-  const dayById = new Map(MEAL_PLAN.map((d) => [d.id, d]));
+export function getAllDaysShopping(mealPlan: CampDay[], config: AllDaysShoppingConfig): DayShoppingResult[] {
+  const allDayIds = mealPlan.map((d) => d.id);
+  const dayById = new Map(mealPlan.map((d) => [d.id, d]));
 
   // Perishable merge chain (uses skippedDays)
   const skippedSet = new Set(config.skippedDays);
@@ -295,6 +294,6 @@ export function getAllDaysShopping(config: AllDaysShoppingConfig): DayShoppingRe
   return results;
 }
 
-export function getMealPlanDays(): { id: string; date: string; dayName: string }[] {
-  return MEAL_PLAN.map((d) => ({ id: d.id, date: d.date, dayName: d.dayName }));
+export function getMealPlanDays(mealPlan: CampDay[]): { id: string; date: string; dayName: string }[] {
+  return mealPlan.map((d) => ({ id: d.id, date: d.date, dayName: d.dayName }));
 }

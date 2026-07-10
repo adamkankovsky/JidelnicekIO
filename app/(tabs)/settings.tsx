@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link } from 'expo-router';
 
 import { useDiners } from '@/context/DinersContext';
 import { useLocalBackup } from '@/context/LocalDataContext';
@@ -224,6 +225,21 @@ export default function SettingsScreen() {
               Resetovat všechny ruční úpravy
             </Text>
           </Pressable>
+        </View>
+
+        {/* Link to mladsitabor */}
+        <View className="mt-6 rounded-2xl border border-purple-200 bg-purple-50 p-4">
+          <Text className="mb-2 text-base font-semibold text-purple-800">Mladší tábor</Text>
+          <Text className="mb-3 text-sm text-camp-muted">
+            Samostatný nákupní seznam pro mladší tábor (29 dětí + 15 vedoucích).
+          </Text>
+          <Link href="/mladsitabor" asChild>
+            <Pressable className="rounded-xl bg-purple-700 py-3 active:opacity-70">
+              <Text className="text-center text-base font-semibold text-white">
+                Otevřít mladší tábor
+              </Text>
+            </Pressable>
+          </Link>
         </View>
       </ScrollView>
     </SafeAreaView>

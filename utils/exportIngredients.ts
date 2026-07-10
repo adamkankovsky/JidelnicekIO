@@ -3,7 +3,7 @@ import { getScaledMealIngredients } from '@/utils/scaledMealIngredients';
 
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { MEAL_PLAN } from '@/data/mealPlan';
-import { formatDiners, getMealTargetDiners, MEAL_TYPE_LABELS } from '@/data/types';
+import { formatDiners, getMealTargetDiners, MEAL_TYPE_LABELS, type IngredientCategory } from '@/data/types';
 
 const DELIMITER = ';';
 
@@ -101,6 +101,22 @@ export function buildShoppingListCsv(): string {
           item.shop2,
           item.pricePerUnit,
         ]),
+      );
+    }
+  }
+
+  return lines.join('\r\n');
+}
+
+export function buildShoppingListCsvFromCategories(categories: IngredientCategory[]): string {
+  const lines = [
+    csvRow(['Kategorie', 'Surovina', 'Množství', 'Jednotka']),
+  ];
+
+  for (const category of categories) {
+    for (const item of category.items) {
+      lines.push(
+        csvRow([category.category, item.name, item.quantity, item.unit]),
       );
     }
   }

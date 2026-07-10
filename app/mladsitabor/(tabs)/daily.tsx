@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDailyShopping } from '@/context/LocalDataContext';
-import { MEAL_PLAN } from '@/data/mealPlan';
+import { MEAL_PLAN } from '@/data/mladsitabor/mealPlan';
 import {
   getAllDaysShopping,
   getMealPlanDays,
@@ -21,7 +21,7 @@ function ItemRow({ item }: { item: AggregatedItem }) {
       : '';
 
   return (
-    <View className="border-b border-camp-accent/40 bg-white px-4 py-2.5">
+    <View className="border-b border-purple-200/60 bg-white px-4 py-2.5">
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
           <Text className="text-sm font-medium text-camp-text">{item.name}</Text>
@@ -32,7 +32,7 @@ function ItemRow({ item }: { item: AggregatedItem }) {
           ) : null}
         </View>
         {qty ? (
-          <Text className="ml-2 text-sm font-semibold text-camp-primary">{qty}</Text>
+          <Text className="ml-2 text-sm font-semibold text-purple-700">{qty}</Text>
         ) : null}
       </View>
     </View>
@@ -45,7 +45,7 @@ function SectionBlock({ section }: { section: DailyShoppingSection }) {
       <Text className="mb-1 px-1 text-xs font-bold uppercase tracking-wide text-camp-muted">
         {section.label}
       </Text>
-      <View className="overflow-hidden rounded-xl border border-camp-accent/60">
+      <View className="overflow-hidden rounded-xl border border-purple-200/60">
         {section.items.map((item, i) => (
           <ItemRow key={`${item.name}-${i}`} item={item} />
         ))}
@@ -73,11 +73,10 @@ function DayCard({
     (result.bakery?.items.length ?? 0);
 
   return (
-    <View className="mb-4 overflow-hidden rounded-2xl border border-camp-accent bg-white">
-      {/* Header */}
+    <View className="mb-4 overflow-hidden rounded-2xl border border-purple-200 bg-white">
       <Pressable
         onPress={() => setCollapsed(!collapsed)}
-        className="flex-row items-center justify-between bg-camp-primary/5 px-4 py-3">
+        className="flex-row items-center justify-between bg-purple-50 px-4 py-3">
         <View className="flex-1">
           <Text className="text-base font-bold text-camp-text">
             {result.date} {result.dayName}
@@ -94,10 +93,8 @@ function DayCard({
         <Text className="text-lg text-camp-muted">{collapsed ? '▸' : '▾'}</Text>
       </Pressable>
 
-      {/* Content */}
       {!collapsed ? (
         <View className="px-3 pb-3">
-          {/* Bakery first */}
           {result.bakery ? (
             <BakeryBlock
               bakery={result.bakery}
@@ -106,10 +103,9 @@ function DayCard({
             />
           ) : bakerySkipped ? (
             <View className="mt-2 rounded-xl border border-dashed border-amber-300 bg-amber-50/50 px-4 py-3">
-              <Text className="text-xs text-amber-700">Pečivo přeskočeno — sloučeno s předchozím nákupem</Text>
+              <Text className="text-xs text-amber-700">Pečivo přeskočeno</Text>
             </View>
           ) : null}
-          {/* Other perishables */}
           {result.sections.map((section) => (
             <SectionBlock key={section.category} section={section} />
           ))}
@@ -140,21 +136,16 @@ function BakeryBlock({
           Pečivo ({bakery.coversDates.join(' – ')})
         </Text>
         <View className="flex-row gap-1">
-          <Pressable
-            onPress={() => onSetDays(1)}
-            className={`rounded px-2 py-0.5 ${currentDays === 1 ? 'bg-amber-600' : 'bg-amber-200'}`}>
-            <Text className={`text-xs ${currentDays === 1 ? 'font-bold text-white' : 'text-amber-800'}`}>1d</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => onSetDays(2)}
-            className={`rounded px-2 py-0.5 ${currentDays === 2 ? 'bg-amber-600' : 'bg-amber-200'}`}>
-            <Text className={`text-xs ${currentDays === 2 ? 'font-bold text-white' : 'text-amber-800'}`}>2d</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => onSetDays(3)}
-            className={`rounded px-2 py-0.5 ${currentDays === 3 ? 'bg-amber-600' : 'bg-amber-200'}`}>
-            <Text className={`text-xs ${currentDays === 3 ? 'font-bold text-white' : 'text-amber-800'}`}>3d</Text>
-          </Pressable>
+          {([1, 2, 3] as BakeryWindowDays[]).map((d) => (
+            <Pressable
+              key={d}
+              onPress={() => onSetDays(d)}
+              className={`rounded px-2 py-0.5 ${currentDays === d ? 'bg-amber-600' : 'bg-amber-200'}`}>
+              <Text className={`text-xs ${currentDays === d ? 'font-bold text-white' : 'text-amber-800'}`}>
+                {d}d
+              </Text>
+            </Pressable>
+          ))}
         </View>
       </View>
       <View className="overflow-hidden rounded-xl border border-amber-300 bg-amber-50">
@@ -206,7 +197,7 @@ function SkippedDayCard({
   onRestoreBakery: () => void;
 }) {
   return (
-    <View className="mb-2 overflow-hidden rounded-xl border border-dashed border-camp-accent bg-camp-accent/20">
+    <View className="mb-2 overflow-hidden rounded-xl border border-dashed border-purple-200 bg-purple-50/50">
       <View className="flex-row items-center justify-between px-4 py-2.5">
         <View className="flex-1">
           <Text className={`text-sm text-camp-muted ${perishableSkipped ? 'line-through' : ''}`}>
@@ -224,7 +215,7 @@ function SkippedDayCard({
           {perishableSkipped ? (
             <Pressable
               onPress={onRestorePerishables}
-              className="rounded-lg border border-camp-accent bg-white px-3 py-1">
+              className="rounded-lg border border-purple-200 bg-white px-3 py-1">
               <Text className="text-xs text-camp-text">Obnovit suroviny</Text>
             </Pressable>
           ) : null}
@@ -241,7 +232,7 @@ function SkippedDayCard({
   );
 }
 
-export default function DailyShoppingScreen() {
+export default function MladsitaborDailyScreen() {
   const {
     dailyShopping,
     setSkippedDays,
@@ -291,39 +282,22 @@ export default function DailyShoppingScreen() {
   return (
     <SafeAreaView className="flex-1 bg-camp-bg" edges={['bottom']}>
       <ScrollView className="flex-1" contentContainerClassName="px-4 pb-8 pt-4">
-        <Text className="mb-1 text-2xl font-bold text-camp-primary">Denní nákupy</Text>
+        <Text className="mb-1 text-2xl font-bold text-purple-800">Denní nákupy</Text>
         <Text className="mb-4 text-sm text-camp-muted">
           Čerstvé suroviny po dnech. Přeskoč položky a spojí se s předchozím.
         </Text>
 
-        {/* Day list */}
         {allDays.map((day) => {
           const isPerishableSkipped = skippedSet.has(day.id);
           const isBakerySkipped = skippedBakerySet.has(day.id);
 
-          // Both skipped — compact card with separate restore buttons
-          if (isPerishableSkipped && isBakerySkipped) {
+          if (isPerishableSkipped || (isPerishableSkipped && isBakerySkipped)) {
             return (
               <SkippedDayCard
                 key={day.id}
                 date={day.date}
                 dayName={day.dayName}
-                perishableSkipped
-                bakerySkipped
-                onRestorePerishables={() => toggleSkip(day.id)}
-                onRestoreBakery={() => toggleBakerySkip(day.id)}
-              />
-            );
-          }
-
-          // Only perishable skipped
-          if (isPerishableSkipped) {
-            return (
-              <SkippedDayCard
-                key={day.id}
-                date={day.date}
-                dayName={day.dayName}
-                perishableSkipped
+                perishableSkipped={isPerishableSkipped}
                 bakerySkipped={isBakerySkipped}
                 onRestorePerishables={() => toggleSkip(day.id)}
                 onRestoreBakery={() => toggleBakerySkip(day.id)}
@@ -364,7 +338,7 @@ export default function DailyShoppingScreen() {
                 ) : null}
                 <Pressable
                   onPress={() => toggleSkip(day.id)}
-                  className="rounded-lg border border-camp-accent bg-white px-3 py-1">
+                  className="rounded-lg border border-purple-200 bg-white px-3 py-1">
                   <Text className="text-xs text-camp-muted">Přeskočit suroviny</Text>
                 </Pressable>
               </View>

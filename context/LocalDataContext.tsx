@@ -9,9 +9,9 @@ import React, {
 } from 'react';
 import { ActivityIndicator, Text, View } from 'react-native';
 
-import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
-import { DEAL_OFFERS } from '@/data/deals';
-import type { ActualPurchase, DinersConfig, IngredientOverride } from '@/data/types';
+import { INGREDIENT_CATEGORIES as MAIN_INGREDIENT_CATEGORIES } from '@/data/ingredients';
+import { DEAL_OFFERS as MAIN_DEAL_OFFERS } from '@/data/deals';
+import type { ActualPurchase, DealOffer, DinersConfig, IngredientCategory, IngredientOverride } from '@/data/types';
 import { getDealFilterOptions, getPurchaseLineTotal, getShoppingItemKey } from '@/utils/shopping';
 import {
   createDefaultState,
@@ -19,6 +19,7 @@ import {
   loadAppState,
   parseImportedState,
   saveAppState,
+  STORAGE_KEY,
   subscribeToStorageChanges,
   type AppLocalState,
   type CheckedItemsMap,
@@ -28,18 +29,33 @@ import {
 
 export type { MealDinersOverrides, CheckedItemsMap };
 
-function buildAllKeys(): CheckedItemsMap {
+export interface CampConfig {
+  storageKey: string;
+  ingredientCategories: IngredientCategory[];
+  dealOffers: Record<string, DealOffer[]>;
+  allShops: string[];
+}
+
+export const MAIN_CAMP_CONFIG: CampConfig = {
+  storageKey: STORAGE_KEY,
+  ingredientCategories: MAIN_INGREDIENT_CATEGORIES,
+  dealOffers: MAIN_DEAL_OFFERS,
+  allShops: Object.keys(
+    Object.values(MAIN_DEAL_OFFERS)
+      .flat()
+      .reduce((acc, d) => ({ ...acc, [d.shop]: true }), {} as Record<string, boolean>),
+  ),
+};
+
+function buildAllKeys(ingredientCategories: IngredientCategory[]): CheckedItemsMap {
   const map: CheckedItemsMap = {};
-  for (const category of INGREDIENT_CATEGORIES) {
+  for (const category of ingredientCategories) {
     for (const item of category.items) {
       map[getShoppingItemKey(category.category, item)] = false;
     }
   }
   return map;
 }
-
-const ALL_KEYS = buildAllKeys();
-const TOTAL_COUNT = Object.keys(ALL_KEYS).length;
 
 interface LocalDataContextValue {
   isHydrated: boolean;
@@ -87,28 +103,39 @@ interface LocalDataContextValue {
 
 const LocalDataContext = createContext<LocalDataContextValue | null>(null);
 
-export function LocalDataProvider({ children }: { children: React.ReactNode }) {
+export function LocalDataProvider({
+  children,
+  campConfig = MAIN_CAMP_CONFIG,
+}: {
+  children: React.ReactNode;
+  campConfig?: CampConfig;
+}) {
   const [state, setState] = useState<AppLocalState>(createDefaultState);
   const [isHydrated, setIsHydrated] = useState(false);
   const stateRef = useRef(state);
   stateRef.current = state;
 
+  const { storageKey, ingredientCategories, dealOffers } = campConfig;
+
+  const ALL_KEYS = useMemo(() => buildAllKeys(ingredientCategories), [ingredientCategories]);
+  const TOTAL_COUNT = useMemo(() => Object.keys(ALL_KEYS).length, [ALL_KEYS]);
+
   const persist = useCallback(async (next: AppLocalState) => {
     stateRef.current = next;
     setState(next);
     try {
-      await saveAppState(next);
+      await saveAppState(next, storageKey);
     } catch (error) {
       console.warn('Failed to persist local state', error);
     }
-  }, []);
+  }, [storageKey]);
 
   useEffect(() => {
     let active = true;
 
     async function hydrate() {
       try {
-        const loaded = await loadAppState();
+        const loaded = await loadAppState(storageKey);
         if (active) {
           stateRef.current = loaded;
           setState(loaded);
@@ -126,13 +153,13 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
         stateRef.current = next;
         setState(next);
       }
-    });
+    }, storageKey);
 
     return () => {
       active = false;
       unsubscribe();
     };
-  }, []);
+  }, [storageKey]);
 
   const updateState = useCallback(
     (updater: (current: AppLocalState) => AppLocalState) => {
@@ -273,7 +300,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       }
       return { ...current, shopping: { ...current.shopping, checked: next } };
     });
-  }, [updateState]);
+  }, [updateState, ALL_KEYS]);
 
   const setHidePurchased = useCallback(
     (value: boolean) => {
@@ -331,7 +358,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
 
   const checkedCount = useMemo(
     () => Object.keys(ALL_KEYS).filter((key) => state.shopping.checked[key]).length,
-    [state.shopping.checked],
+    [state.shopping.checked, ALL_KEYS],
   );
 
   const setSkippedDays = useCallback(
@@ -369,13 +396,13 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
 
   const totalSpent = useMemo(() => {
     let sum = 0;
-    for (const category of INGREDIENT_CATEGORIES) {
+    for (const category of ingredientCategories) {
       for (const item of category.items) {
         const key = getShoppingItemKey(category.category, item);
         if (!state.shopping.checked[key]) continue;
 
         const purchase = state.purchases[key];
-        const deals = DEAL_OFFERS[key] ?? [];
+        const deals = dealOffers[key] ?? [];
         const lineTotal = getPurchaseLineTotal(
           item,
           purchase,
@@ -386,7 +413,7 @@ export function LocalDataProvider({ children }: { children: React.ReactNode }) {
       }
     }
     return sum;
-  }, [state.purchases, state.shopping.checked]);
+  }, [state.purchases, state.shopping.checked, ingredientCategories, dealOffers]);
 
   const value = useMemo(
     () => ({

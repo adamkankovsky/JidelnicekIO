@@ -153,9 +153,9 @@ async function loadLegacyState(): Promise<AppLocalState | null> {
   return state;
 }
 
-export async function loadAppState(): Promise<AppLocalState> {
+export async function loadAppState(storageKey: string = STORAGE_KEY): Promise<AppLocalState> {
   try {
-    const stored = await AsyncStorage.getItem(STORAGE_KEY);
+    const stored = await AsyncStorage.getItem(storageKey);
     if (stored) {
       const parsed = JSON.parse(stored) as AppLocalState;
       const merged = mergeState(createDefaultState(), parsed);
@@ -165,23 +165,25 @@ export async function loadAppState(): Promise<AppLocalState> {
     console.warn('Failed to load unified local state', error);
   }
 
-  const legacy = await loadLegacyState();
-  if (legacy) {
-    await saveAppState(legacy);
-    await AsyncStorage.multiRemove([...LEGACY_KEYS]);
-    return legacy;
+  if (storageKey === STORAGE_KEY) {
+    const legacy = await loadLegacyState();
+    if (legacy) {
+      await saveAppState(legacy, storageKey);
+      await AsyncStorage.multiRemove([...LEGACY_KEYS]);
+      return legacy;
+    }
   }
 
   return createDefaultState();
 }
 
-export async function saveAppState(state: AppLocalState): Promise<void> {
+export async function saveAppState(state: AppLocalState, storageKey: string = STORAGE_KEY): Promise<void> {
   const payload: AppLocalState = {
     ...state,
     version: STORAGE_VERSION,
     savedAt: new Date().toISOString(),
   };
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  await AsyncStorage.setItem(storageKey, JSON.stringify(payload));
 }
 
 export function parseImportedState(raw: string): AppLocalState {
@@ -193,13 +195,13 @@ export function exportStateJson(state: AppLocalState): string {
   return JSON.stringify(state, null, 2);
 }
 
-export function subscribeToStorageChanges(onChange: (state: AppLocalState) => void): () => void {
+export function subscribeToStorageChanges(onChange: (state: AppLocalState) => void, storageKey: string = STORAGE_KEY): () => void {
   if (Platform.OS !== 'web' || typeof window === 'undefined') {
     return () => {};
   }
 
   const handler = (event: StorageEvent) => {
-    if (event.key !== STORAGE_KEY || !event.newValue) return;
+    if (event.key !== storageKey || !event.newValue) return;
     try {
       onChange(JSON.parse(event.newValue) as AppLocalState);
     } catch (error) {
