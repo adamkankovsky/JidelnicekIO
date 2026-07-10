@@ -7,7 +7,7 @@ import {
   getAllDaysShopping,
   getMealPlanDays,
   type AggregatedItem,
-  type BakeryShoppingBlock,
+  type BakerySection,
   type DailyShoppingSection,
   type DayShoppingResult,
 } from '@/utils/dailyShopping';
@@ -54,17 +54,15 @@ function SectionBlock({ section }: { section: DailyShoppingSection }) {
 
 function DayCard({
   result,
-  isSkipped,
-  onToggleSkip,
   mergedDayNames,
 }: {
   result: DayShoppingResult;
-  isSkipped: boolean;
-  onToggleSkip: () => void;
   mergedDayNames: string[];
 }) {
   const [collapsed, setCollapsed] = useState(false);
-  const totalItems = result.sections.reduce((sum, s) => sum + s.items.length, 0);
+  const totalItems =
+    result.sections.reduce((sum, s) => sum + s.items.length, 0) +
+    (result.bakery?.items.length ?? 0);
 
   return (
     <View className="mb-4 overflow-hidden rounded-2xl border border-camp-accent bg-white">
@@ -91,6 +89,9 @@ function DayCard({
       {/* Content */}
       {!collapsed ? (
         <View className="px-3 pb-3">
+          {/* Bakery first */}
+          {result.bakery ? <BakeryBlock bakery={result.bakery} /> : null}
+          {/* Other perishables */}
           {result.sections.map((section) => (
             <SectionBlock key={section.category} section={section} />
           ))}
@@ -105,18 +106,32 @@ function DayCard({
   );
 }
 
-function BakeryTopBlock({ bakery }: { bakery: BakeryShoppingBlock }) {
+function BakeryBlock({ bakery }: { bakery: BakerySection }) {
   return (
-    <View className="mb-5 overflow-hidden rounded-2xl border border-camp-accent">
-      <View className="bg-amber-600 px-4 py-3">
-        <Text className="text-sm font-bold uppercase tracking-wide text-white">
-          {bakery.label} — celkem
-        </Text>
-        <Text className="mt-0.5 text-xs text-amber-100">{bakery.dayRange}</Text>
+    <View className="mt-2">
+      <Text className="mb-1 px-1 text-xs font-bold uppercase tracking-wide text-amber-700">
+        Pečivo ({bakery.coversDates.join(' – ')})
+      </Text>
+      <View className="overflow-hidden rounded-xl border border-amber-300 bg-amber-50">
+        {bakery.items.map((item, i) => (
+          <View key={`bk-${item.name}-${i}`} className="border-b border-amber-200 px-4 py-2.5">
+            <View className="flex-row items-center justify-between">
+              <Text className="flex-1 text-sm font-medium text-camp-text">{item.name}</Text>
+              {item.totalQuantity != null ? (
+                <Text className="ml-2 text-sm font-semibold text-amber-700">
+                  {Number.isInteger(item.totalQuantity) ? item.totalQuantity : item.totalQuantity.toFixed(1)}{' '}
+                  {item.unit}
+                </Text>
+              ) : null}
+            </View>
+            {item.sources.length > 0 ? (
+              <Text className="mt-0.5 text-xs text-camp-muted">
+                {item.sources.join(' · ')}
+              </Text>
+            ) : null}
+          </View>
+        ))}
       </View>
-      {bakery.items.map((item, i) => (
-        <ItemRow key={`bakery-${item.name}-${i}`} item={item} />
-      ))}
     </View>
   );
 }
@@ -161,7 +176,7 @@ export default function DailyShoppingScreen() {
 
   const allDays = useMemo(() => getMealPlanDays(), []);
 
-  const { days: shoppingResults, bakery } = useMemo(
+  const shoppingResults = useMemo(
     () =>
       getAllDaysShopping({
         skippedDays: dailyShopping.skippedDays,
@@ -251,9 +266,6 @@ export default function DailyShoppingScreen() {
           ) : null}
         </View>
 
-        {/* Bakery combined block */}
-        {bakery ? <BakeryTopBlock bakery={bakery} /> : null}
-
         {/* Day list */}
         {allDays.map((day) => {
           const isSkipped = skippedSet.has(day.id);
@@ -282,8 +294,6 @@ export default function DailyShoppingScreen() {
             <View key={day.id}>
               <DayCard
                 result={result}
-                isSkipped={false}
-                onToggleSkip={() => toggleSkip(day.id)}
                 mergedDayNames={mergedDayNames}
               />
               {/* Skip button below the card */}
