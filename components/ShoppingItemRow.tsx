@@ -41,7 +41,7 @@ export function ShoppingItemRow({ category, item, shopFilter, periodFilter }: Sh
   const lineTotal = getPurchaseLineTotal(item, purchase, allDeals, dealOptions);
   const unitPrice = getEffectiveUnitPrice(purchase, allDeals, dealOptions);
   const needed = parseShoppingMeasure(item);
-  const packageCount = purchase?.price != null ? needed.amount : getPackageCount(item, bestDeal);
+  const packageCount = purchase?.price != null ? needed.amount : (getPackageCount(item, bestDeal) ?? needed.amount);
   const priceUnitLabel = purchase?.price != null ? item.unit : getPackageLabel(bestDeal);
   const fromDeal = isUsingDealPrice(purchase, allDeals, dealOptions);
   const displayShop = purchase?.shop || bestDeal?.shop || '';

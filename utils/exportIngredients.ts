@@ -4,6 +4,7 @@ import { getScaledMealIngredients } from '@/utils/scaledMealIngredients';
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { MEAL_PLAN } from '@/data/mealPlan';
 import { formatDiners, getMealTargetDiners, MEAL_TYPE_LABELS, type IngredientCategory } from '@/data/types';
+import { scaleShoppingCategories } from '@/utils/shopping';
 
 const DELIMITER = ';';
 
@@ -84,12 +85,13 @@ export function buildMealPlanCsv(config: ScaledMealConfig): string {
   return lines.join('\r\n');
 }
 
-export function buildShoppingListCsv(): string {
+export function buildShoppingListCsv(categories?: IngredientCategory[]): string {
+  const cats = categories ?? INGREDIENT_CATEGORIES;
   const lines = [
     csvRow(['Kategorie', 'Surovina', 'Množství', 'Jednotka', 'Obchod 1', 'Obchod 2', 'Cena / jednotku']),
   ];
 
-  for (const category of INGREDIENT_CATEGORIES) {
+  for (const category of cats) {
     for (const item of category.items) {
       lines.push(
         csvRow([
@@ -125,9 +127,10 @@ export function buildShoppingListCsvFromCategories(categories: IngredientCategor
 }
 
 export function buildAllIngredientsCsv(config: ScaledMealConfig): string {
+  const scaled = scaleShoppingCategories(INGREDIENT_CATEGORIES, config.coefficient);
   return [
     'Nákupní seznam',
-    buildShoppingListCsv(),
+    buildShoppingListCsv(scaled),
     '',
     'Jídelníček (přepočtené množství)',
     buildMealPlanCsv(config),

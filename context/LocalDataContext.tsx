@@ -12,7 +12,7 @@ import { ActivityIndicator, Text, View } from 'react-native';
 import { INGREDIENT_CATEGORIES as MAIN_INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { DEAL_OFFERS as MAIN_DEAL_OFFERS } from '@/data/deals';
 import type { ActualPurchase, DealOffer, DinersConfig, IngredientCategory, IngredientOverride } from '@/data/types';
-import { getDealFilterOptions, getPurchaseLineTotal, getShoppingItemKey } from '@/utils/shopping';
+import { getDealFilterOptions, getPurchaseLineTotal, getShoppingItemKey, scaleShoppingCategories } from '@/utils/shopping';
 import {
   createDefaultState,
   exportStateJson,
@@ -394,9 +394,14 @@ export function LocalDataProvider({
     [updateState],
   );
 
+  const scaledIngredientCategories = useMemo(
+    () => scaleShoppingCategories(ingredientCategories, state.diners.coefficient),
+    [ingredientCategories, state.diners.coefficient],
+  );
+
   const totalSpent = useMemo(() => {
     let sum = 0;
-    for (const category of ingredientCategories) {
+    for (const category of scaledIngredientCategories) {
       for (const item of category.items) {
         const key = getShoppingItemKey(category.category, item);
         if (!state.shopping.checked[key]) continue;
@@ -413,7 +418,7 @@ export function LocalDataProvider({
       }
     }
     return sum;
-  }, [state.purchases, state.shopping.checked, ingredientCategories, dealOffers]);
+  }, [state.purchases, state.shopping.checked, scaledIngredientCategories, dealOffers]);
 
   const value = useMemo(
     () => ({

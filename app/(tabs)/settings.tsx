@@ -8,7 +8,9 @@ import { useLocalBackup } from '@/context/LocalDataContext';
 import { MEAL_PLAN } from '@/data/mealPlan';
 import { formatDiners, getMealTargetDiners, getTotalDiners, MEAL_TYPE_LABELS } from '@/data/types';
 import { downloadTextFile } from '@/utils/downloadFile';
+import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { buildAllIngredientsCsv, buildMealPlanCsv, buildShoppingListCsv } from '@/utils/exportIngredients';
+import { scaleShoppingCategories } from '@/utils/shopping';
 
 export default function SettingsScreen() {
   const { coefficient, setCoefficient, clearAllOverrides, overrides, mealDinersOverrides } = useDiners();
@@ -207,7 +209,7 @@ export default function SettingsScreen() {
             <Text className="text-center text-base font-semibold text-camp-primary">Stáhnout jídelníček (CSV)</Text>
           </Pressable>
           <Pressable
-            onPress={() => handleDownload('nakupni-seznam.csv', buildShoppingListCsv())}
+            onPress={() => handleDownload('nakupni-seznam.csv', buildShoppingListCsv(scaleShoppingCategories(INGREDIENT_CATEGORIES, coefficient)))}
             className="rounded-xl bg-camp-accent py-3 active:opacity-70">
             <Text className="text-center text-base font-semibold text-camp-primary">Stáhnout nákupní seznam (CSV)</Text>
           </Pressable>

@@ -3,13 +3,14 @@ import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ShoppingCategory } from '@/components/ShoppingCategory';
+import { useDiners } from '@/context/DinersContext';
 import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
 import { ALL_SHOPS, DEAL_OFFERS } from '@/data/deals';
 import { INGREDIENT_CATEGORIES } from '@/data/ingredients';
 import { downloadTextFile } from '@/utils/downloadFile';
-import { buildShoppingListCsv } from '@/utils/exportIngredients';
-import { computeShoppingListEstimate, getPromoPeriodsFromDeals } from '@/utils/shopping';
+import { buildShoppingListCsvFromCategories } from '@/utils/exportIngredients';
+import { computeShoppingListEstimate, getPromoPeriodsFromDeals, scaleShoppingCategories } from '@/utils/shopping';
 
 export default function ShoppingScreen() {
   const {
@@ -24,18 +25,24 @@ export default function ShoppingScreen() {
     setPeriodFilter,
   } = useShopping();
   const { totalSpent } = usePurchases();
+  const { coefficient } = useDiners();
+
+  const scaledCategories = useMemo(
+    () => scaleShoppingCategories(INGREDIENT_CATEGORIES, coefficient),
+    [coefficient],
+  );
 
   const promoPeriods = useMemo(() => getPromoPeriodsFromDeals(DEAL_OFFERS), []);
   const estimate = useMemo(
-    () => computeShoppingListEstimate(INGREDIENT_CATEGORIES, DEAL_OFFERS, shopFilter, periodFilter),
-    [shopFilter, periodFilter],
+    () => computeShoppingListEstimate(scaledCategories, DEAL_OFFERS, shopFilter, periodFilter),
+    [scaledCategories, shopFilter, periodFilter],
   );
 
   const progress = totalCount > 0 ? checkedCount / totalCount : 0;
   const remaining = totalCount - checkedCount;
 
   const handleDownload = () => {
-    const ok = downloadTextFile('nakupni-seznam.csv', buildShoppingListCsv());
+    const ok = downloadTextFile('nakupni-seznam.csv', buildShoppingListCsvFromCategories(scaledCategories));
     if (!ok) {
       Alert.alert('Export', 'Stažení souboru je dostupné ve webové verzi aplikace.');
     }
@@ -187,7 +194,7 @@ export default function ShoppingScreen() {
         </View>
 
         {/* Shopping list */}
-        {INGREDIENT_CATEGORIES.map((category) => (
+        {scaledCategories.map((category) => (
           <ShoppingCategory
             key={category.category}
             category={category}

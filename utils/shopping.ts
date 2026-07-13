@@ -1,4 +1,4 @@
-import type { ActualPurchase, DealOffer, ShoppingItem } from '@/data/types';
+import type { ActualPurchase, DealOffer, IngredientCategory, ShoppingItem } from '@/data/types';
 
 export interface PromoPeriod {
   label: string;
@@ -194,8 +194,8 @@ function canCompareMeasures(a: MeasureKind, b: MeasureKind): boolean {
   return (a === 'mass' && b === 'volume') || (a === 'volume' && b === 'mass');
 }
 
-/** How many store packages to buy for the shopping-list amount. */
-export function getPackageCount(item: ShoppingItem, deal?: DealOffer | null): number {
+/** How many store packages to buy for the shopping-list amount. Returns null when units are incompatible (e.g. ks vs kg). */
+export function getPackageCount(item: ShoppingItem, deal?: DealOffer | null): number | null {
   const needed = parseShoppingMeasure(item);
   if (!deal) return needed.amount;
 
@@ -211,7 +211,7 @@ export function getPackageCount(item: ShoppingItem, deal?: DealOffer | null): nu
   if (!neededBase || !packBase) return needed.amount;
 
   if (neededBase.kind === 'count' && packBase.kind !== 'count') {
-    return needed.amount;
+    return null;
   }
 
   if (canCompareMeasures(neededBase.kind, packBase.kind)) {
@@ -246,7 +246,10 @@ export function getPurchaseLineTotal(
     return unitPrice * parseShoppingMeasure(item).amount;
   }
 
-  return unitPrice * getPackageCount(item, bestDeal);
+  const pkgCount = getPackageCount(item, bestDeal);
+  if (pkgCount == null) return null;
+
+  return unitPrice * pkgCount;
 }
 
 export function isUsingDealPrice(
@@ -351,4 +354,48 @@ export function formatShoppingPrice(item: ShoppingItem): string | null {
     parts.push(item.pricePerUnit);
   }
   return parts.length > 0 ? parts.join(' · ') : null;
+}
+
+const INTEGER_SHOPPING_UNITS = /\b(x|ks|lahve?|velk[áé]|cihla|pytlíků)\b/i;
+
+function scaleShoppingQuantityString(quantity: string, coefficient: number): string {
+  if (coefficient === 1) return quantity;
+
+  const normalized = quantity.replace(',', '.');
+  const match = normalized.match(/(\d+(?:\.\d+)?)/);
+  if (!match) return quantity;
+
+  const original = parseFloat(match[1]);
+  if (!Number.isFinite(original) || original <= 0) return quantity;
+
+  const isInteger = INTEGER_SHOPPING_UNITS.test(quantity) || /^\d+$/.test(quantity.trim());
+  const scaled = isInteger
+    ? Math.ceil(original * coefficient)
+    : Math.round(original * coefficient * 10) / 10;
+
+  const scaledStr = Number.isInteger(scaled) ? String(scaled) : scaled.toFixed(1).replace('.', ',');
+  return quantity.replace(/\d+(?:[.,]\d+)?/, scaledStr);
+}
+
+function scalePrice(price: number | null, coefficient: number): number | null {
+  if (price == null || coefficient === 1) return price;
+  return Math.round(price * coefficient);
+}
+
+/** Returns a new set of categories with quantities and total prices scaled by coefficient. */
+export function scaleShoppingCategories(
+  categories: IngredientCategory[],
+  coefficient: number,
+): IngredientCategory[] {
+  if (coefficient === 1) return categories;
+
+  return categories.map((cat) => ({
+    ...cat,
+    items: cat.items.map((item) => ({
+      ...item,
+      quantity: scaleShoppingQuantityString(item.quantity, coefficient),
+      shop1: scalePrice(item.shop1, coefficient),
+      shop2: scalePrice(item.shop2, coefficient),
+    })),
+  }));
 }

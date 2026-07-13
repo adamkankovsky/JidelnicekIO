@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
 
 import { ShoppingCategory } from '@/components/ShoppingCategory';
+import { useDiners } from '@/context/DinersContext';
 import { usePurchases } from '@/context/PurchaseContext';
 import { useShopping } from '@/context/ShoppingContext';
 import { INGREDIENT_CATEGORIES } from '@/data/mladsitabor/ingredients';
 import { downloadTextFile } from '@/utils/downloadFile';
 import { buildShoppingListCsvFromCategories } from '@/utils/exportIngredients';
+import { scaleShoppingCategories } from '@/utils/shopping';
 
 export default function MladsitaborShoppingScreen() {
   const {
@@ -19,6 +21,12 @@ export default function MladsitaborShoppingScreen() {
     setHidePurchased,
   } = useShopping();
   const { totalSpent } = usePurchases();
+  const { coefficient } = useDiners();
+
+  const scaledCategories = useMemo(
+    () => scaleShoppingCategories(INGREDIENT_CATEGORIES, coefficient),
+    [coefficient],
+  );
 
   const progress = totalCount > 0 ? checkedCount / totalCount : 0;
   const remaining = totalCount - checkedCount;
@@ -26,7 +34,7 @@ export default function MladsitaborShoppingScreen() {
   const handleDownload = () => {
     const ok = downloadTextFile(
       'mladsitabor-nakupni-seznam.csv',
-      buildShoppingListCsvFromCategories(INGREDIENT_CATEGORIES),
+      buildShoppingListCsvFromCategories(scaledCategories),
     );
     if (!ok) {
       Alert.alert('Export', 'Stažení souboru je dostupné ve webové verzi aplikace.');
@@ -101,7 +109,7 @@ export default function MladsitaborShoppingScreen() {
         </View>
 
         {/* Shopping list */}
-        {INGREDIENT_CATEGORIES.map((category) => (
+        {scaledCategories.map((category) => (
           <ShoppingCategory
             key={category.category}
             category={category}
